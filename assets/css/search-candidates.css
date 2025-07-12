@@ -1,0 +1,698 @@
+/* Skillia Search Candidates Page - Custom CSS */
+
+.search-candidates-main {
+    width: 100%;
+    min-height: 100vh;
+    background: #f6f6fb;
+    padding-bottom: 40px;
+}
+
+.search-candidates-hero-section {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    min-height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 48px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #f5f9ff 100%);
+}
+
+.search-candidates-hero-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Animated search-related shapes */
+.search-candidates-hero-bg::before,
+.search-candidates-hero-bg::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.08;
+    filter: blur(12px);
+}
+
+.search-candidates-hero-bg::before {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(45deg, #2196f3, #42a5f5);
+    top: 10%;
+    left: 10%;
+    animation: search-float1 9s ease-in-out infinite;
+}
+
+.search-candidates-hero-bg::after {
+    width: 220px;
+    height: 220px;
+    background: linear-gradient(45deg, #00bcd4, #26c6da);
+    bottom: 15%;
+    right: 12%;
+    animation: search-float2 11s ease-in-out infinite;
+}
+
+@keyframes search-float1 {
+    0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+    33% { transform: translateY(-25px) scale(1.08) rotate(120deg); }
+    66% { transform: translateY(15px) scale(0.92) rotate(240deg); }
+}
+
+@keyframes search-float2 {
+    0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+    50% { transform: translateY(30px) scale(1.12) rotate(180deg); }
+}
+
+/* Magnifying glass shapes */
+.search-candidates-hero-bg .search-magnifier-1 {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border: 3px solid #2196f3;
+    border-radius: 50%;
+    top: 25%;
+    right: 30%;
+    opacity: 0.12;
+    animation: search-magnifier1 8s ease-in-out infinite;
+}
+
+.search-candidates-hero-bg .search-magnifier-1::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 3px;
+    background: #2196f3;
+    bottom: -15px;
+    right: -20px;
+    transform: rotate(45deg);
+    opacity: 0.12;
+}
+
+.search-candidates-hero-bg .search-magnifier-2 {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 2px solid #00bcd4;
+    border-radius: 50%;
+    bottom: 30%;
+    left: 25%;
+    opacity: 0.1;
+    animation: search-magnifier2 10s ease-in-out infinite;
+}
+
+.search-candidates-hero-bg .search-magnifier-2::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 2px;
+    background: #00bcd4;
+    bottom: -12px;
+    right: -15px;
+    transform: rotate(45deg);
+    opacity: 0.1;
+}
+
+@keyframes search-magnifier1 {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.1); }
+}
+
+@keyframes search-magnifier2 {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(25px) scale(0.9); }
+}
+
+/* User profile shapes */
+.search-candidates-hero-bg .user-profile-1 {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, #9c27b0, #ba68c8);
+    border-radius: 50%;
+    top: 45%;
+    left: 15%;
+    opacity: 0.08;
+    animation: user-profile1 12s ease-in-out infinite;
+}
+
+.search-candidates-hero-bg .user-profile-2 {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(45deg, #ff9800, #ffb74d);
+    border-radius: 50%;
+    top: 60%;
+    right: 20%;
+    opacity: 0.07;
+    animation: user-profile2 14s ease-in-out infinite;
+}
+
+@keyframes user-profile1 {
+    0%, 100% { transform: translateY(0) scale(1); }
+    33% { transform: translateY(-15px) scale(1.2); }
+    66% { transform: translateY(10px) scale(0.8); }
+}
+
+@keyframes user-profile2 {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(20px) scale(1.15); }
+}
+
+/* Data stream lines */
+.search-candidates-hero-bg .data-stream {
+    position: absolute;
+    width: 2px;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, #2196f3, transparent);
+    top: 20%;
+    left: 60%;
+    opacity: 0.15;
+    animation: data-stream-flow 6s ease-in-out infinite;
+}
+
+.search-candidates-hero-bg .data-stream:nth-child(2) {
+    left: 70%;
+    animation-delay: 2s;
+}
+
+.search-candidates-hero-bg .data-stream:nth-child(3) {
+    left: 80%;
+    animation-delay: 4s;
+}
+
+@keyframes data-stream-flow {
+    0%, 100% { 
+        transform: translateY(0) scaleY(1);
+        opacity: 0.15;
+    }
+    50% { 
+        transform: translateY(40px) scaleY(1.5);
+        opacity: 0.4;
+    }
+}
+
+/* Floating search icons */
+.search-candidates-hero-bg .search-icon-1 {
+    position: absolute;
+    top: 35%;
+    left: 45%;
+    font-size: 2.4rem;
+    color: #2196f3;
+    opacity: 0.15;
+    animation: search-icon-float1 7s ease-in-out infinite;
+    z-index: 2;
+}
+
+.search-candidates-hero-bg .search-icon-2 {
+    position: absolute;
+    bottom: 25%;
+    left: 40%;
+    font-size: 1.8rem;
+    color: #00bcd4;
+    opacity: 0.12;
+    animation: search-icon-float2 9s ease-in-out infinite;
+    z-index: 2;
+}
+
+@keyframes search-icon-float1 {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-18px) scale(1.1); }
+}
+
+@keyframes search-icon-float2 {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(22px) scale(0.9); }
+}
+
+.search-candidates-hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    width: 100%;
+    margin: 0 auto;
+    padding: 64px 0 48px 0;
+    color: #333;
+}
+
+.search-candidates-hero-content h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+    color: #2196f3;
+}
+
+.search-candidates-hero-content h1 span {
+    color: #00bcd4;
+    position: relative;
+}
+
+.search-candidates-hero-content p {
+    font-size: 1.25rem;
+    color: #555;
+    margin-bottom: 0;
+}
+
+/* Search Filters Section */
+.search-filters-section {
+    padding: 0 0 40px 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.filters-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(33, 150, 243, 0.08);
+    margin-bottom: 40px;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.filters-card h3 {
+    color: #2196f3;
+    font-size: 1.4rem;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.filter-group input,
+.filter-group select {
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-btn {
+    background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+    color: #fff;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(33, 150, 243, 0.3);
+}
+
+.search-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.clear-btn {
+    background: #f5f5f5;
+    color: #666;
+    border: 2px solid #e1e5e9;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.clear-btn:hover:not(:disabled) {
+    background: #e8e8e8;
+    color: #333;
+}
+
+.clear-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Candidates Results Section */
+.candidates-results-section {
+    padding: 0 0 60px 0;
+}
+
+/* Center the results header block */
+.results-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.results-header h2 {
+    color: #2196f3;
+    font-size: 1.8rem;
+    margin: 0;
+    text-align: center;
+    width: 100%;
+}
+
+.results-count {
+    color: #666;
+    font-size: 0.9rem;
+    text-align: center;
+    width: 100%;
+}
+
+.sort-options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.sort-options label {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.sort-options select {
+    padding: 8px 12px;
+    border: 2px solid #e1e5e9;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: #fff;
+}
+
+.candidates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.candidate-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+}
+
+.candidate-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(33, 150, 243, 0.15);
+}
+
+.candidate-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.candidate-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.candidate-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.candidate-info {
+    flex: 1;
+}
+
+.candidate-info h3 {
+    color: #333;
+    font-size: 1.2rem;
+    margin: 0 0 4px 0;
+    font-weight: 600;
+}
+
+.candidate-title {
+    color: #2196f3;
+    font-size: 1rem;
+    margin: 0 0 4px 0;
+    font-weight: 500;
+}
+
+.candidate-location {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.available {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.status-badge.immediate {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.candidate-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.skill-tag {
+    background: #f0f8ff;
+    color: #2196f3;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.candidate-details {
+    margin-bottom: 20px;
+}
+
+.candidate-details p {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0 0 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.candidate-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.view-profile-btn,
+.contact-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.view-profile-btn {
+    background: #f0f8ff;
+    color: #2196f3;
+    border: 2px solid #2196f3;
+}
+
+.view-profile-btn:hover:not(:disabled) {
+    background: #2196f3;
+    color: #fff;
+}
+
+.contact-btn {
+    background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+    color: #fff;
+    border: none;
+}
+
+.contact-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+}
+
+.view-profile-btn:disabled,
+.contact-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+}
+
+.pagination-btn {
+    background: #f5f5f5;
+    color: #666;
+    border: 2px solid #e1e5e9;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #e8e8e8;
+    color: #333;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.page-numbers {
+    display: flex;
+    gap: 8px;
+}
+
+.page-number {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.page-number:hover {
+    background: #f0f8ff;
+    color: #2196f3;
+}
+
+.page-number.active {
+    background: #2196f3;
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .results-header {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .candidates-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .candidate-actions {
+        flex-direction: column;
+    }
+    
+    .pagination {
+        flex-wrap: wrap;
+    }
+} 

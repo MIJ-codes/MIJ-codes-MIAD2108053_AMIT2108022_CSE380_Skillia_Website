@@ -1,0 +1,468 @@
+/* Skillia Salary Guide Page - Clean Modular CSS */
+
+.salary-guide-main {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(120deg, #fff3e0 0%, #fffde7 100%);
+    padding-bottom: 40px;
+}
+
+/* Section base styles */
+.sg-hero-section,
+.sg-calculator-section,
+.sg-market-section,
+.sg-industries-section,
+.sg-trends-section {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    min-height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 48px;
+    overflow: hidden;
+    max-width: none;
+}
+
+/* --- HERO SECTION --- */
+.sg-hero-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, #ff7043 0%, #ffd600 70%, #7c4dff 100%);
+    z-index: 1;
+    opacity: 1;
+    pointer-events: none;
+}
+
+.sg-hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 64px 0 48px 0;
+    color: #fff;
+    animation: fadeInUp 1.1s 0.2s both;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.sg-hero-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+    color: #fff;
+    /* Crisp outline instead of glow */
+    text-shadow:
+      1px 1px 0 #fff,
+      -1px -1px 0 #a18cd1,
+      1px -1px 0 #fff,
+      -1px 1px 0 #a18cd1;
+}
+
+.sg-hero-subtitle {
+    font-size: 1.25rem;
+    color: #fff;
+    opacity: 0.9;
+    margin-bottom: 0;
+    /* Crisp outline instead of glow */
+    text-shadow:
+      1px 1px 0 #fff,
+      -1px -1px 0 #a18cd1,
+      1px -1px 0 #fff,
+      -1px 1px 0 #a18cd1;
+}
+
+/* --- ANIMATED COINS --- */
+.animated-coins {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.animated-coins span {
+    position: absolute;
+    display: block;
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 50%;
+    animation: coinFloat 7s infinite linear;
+    opacity: 0.7;
+}
+
+.animated-coins span:nth-child(1) { left: 20%; top: 80%; animation-delay: 0s; }
+.animated-coins span:nth-child(2) { left: 40%; top: 92%; animation-delay: 1.5s; }
+.animated-coins span:nth-child(3) { left: 65%; top: 85%; animation-delay: 3s; }
+.animated-coins span:nth-child(4) { left: 85%; top: 95%; animation-delay: 4.5s; }
+.animated-coins span:nth-child(5) { left: 98%; top: 88%; animation-delay: 6s; }
+
+@keyframes coinFloat {
+    0% { transform: translateY(0) scale(1); opacity: 0.7; }
+    60% { opacity: 1; }
+    100% { transform: translateY(-600px) scale(1.2); opacity: 0; }
+}
+
+/* --- CALCULATOR SECTION --- */
+.sg-calculator-section {
+    background: #fff;
+    padding: 80px 0;
+}
+
+.sg-calculator-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.sg-calculator-title {
+    font-size: 2.2rem;
+    color: #7c4dff;
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.sg-calculator-form {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(255,112,67,0.10);
+    padding: 40px;
+    border: 2px solid rgba(255,214,0,0.08);
+}
+
+.sg-form-group {
+    margin-bottom: 24px;
+}
+
+.sg-form-group label {
+    display: block;
+    font-weight: 600;
+    color: #ff7043;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.sg-form-group input,
+.sg-form-group select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #fff3e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.sg-form-group input:focus,
+.sg-form-group select:focus {
+    outline: none;
+    border-color: #ff7043;
+    box-shadow: 0 0 0 3px rgba(255,112,67,0.10);
+}
+
+.sg-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.sg-calculate-btn {
+    background: linear-gradient(135deg, #ff7043 0%, #ffd600 70%, #7c4dff 100%);
+    color: #fff;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.sg-calculate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255,112,67,0.22);
+}
+
+.sg-result {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e0c3fc 100%);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 24px;
+    text-align: center;
+    border: 2px solid rgba(161,140,209,0.2);
+}
+
+.sg-result h3 {
+    color: #7c4dff;
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+}
+
+.sg-result .salary-amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #a18cd1;
+    margin-bottom: 8px;
+}
+
+.sg-result .salary-range {
+    color: #666;
+    font-size: 1rem;
+}
+
+/* --- MARKET SECTION --- */
+.sg-market-section {
+    background: #f8f9fa;
+    padding: 80px 0;
+}
+
+.sg-market-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.sg-market-title {
+    font-size: 2.2rem;
+    color: #7c4dff;
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.sg-market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.sg-market-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(255,112,67,0.10);
+    border: 2px solid rgba(255,214,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.sg-market-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(255,112,67,0.15);
+}
+
+.sg-market-card h3 {
+    color: #7c4dff;
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.sg-market-card .salary-data {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.sg-market-card .avg-salary {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #b388ff;
+}
+
+.sg-market-card .growth-rate {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.sg-market-card .growth-rate.positive {
+    background: rgba(255,214,0,0.10);
+    color: #ffd600;
+}
+
+.sg-market-card .growth-rate.negative {
+    background: rgba(255,112,67,0.10);
+    color: #ff7043;
+}
+
+.sg-market-card p {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* --- INDUSTRIES SECTION --- */
+.sg-industries-section {
+    background: #fff;
+    padding: 80px 0;
+}
+
+.sg-industries-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.sg-industries-title {
+    font-size: 2.2rem;
+    color: #7c4dff;
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.sg-industries-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 32px;
+}
+
+.sg-industry-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(255,112,67,0.10);
+    border: 2px solid rgba(255,214,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.sg-industry-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(255,112,67,0.15);
+}
+
+.sg-industry-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #ff7043 0%, #ffd600 70%, #7c4dff 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: #fff;
+    font-size: 1.5rem;
+}
+
+.sg-industry-card h3 {
+    color: #7c4dff;
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.sg-industry-card .salary-range {
+    color: #b388ff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.sg-industry-card p {
+    color: #666;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* --- TRENDS SECTION --- */
+.sg-trends-section {
+    background: #f8f9fa;
+    padding: 80px 0;
+}
+
+.sg-trends-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.sg-trends-title {
+    font-size: 2.2rem;
+    color: #7c4dff;
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.sg-trends-list {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 8px 32px rgba(255,112,67,0.10);
+}
+
+.sg-trend-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #f3e8ff;
+}
+
+.sg-trend-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.sg-trend-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,112,67,0.10);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff7043;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.sg-trend-content h4 {
+    color: #7c4dff;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.sg-trend-content p {
+    color: #666;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sg-form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .sg-hero-title {
+        font-size: 2.2rem;
+    }
+    
+    .sg-market-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .sg-industries-grid {
+        grid-template-columns: 1fr;
+    }
+} 
