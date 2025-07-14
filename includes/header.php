@@ -1,5 +1,4 @@
 <?php 
-session_start();
 /* Skillia Header Include */ 
 ?>
 <?php $currentPage = isset($currentPage) ? $currentPage : '' ?>
@@ -46,7 +45,7 @@ session_start();
     </div>
     <?php if (isset($_SESSION['user_id'])): ?>
       <div id="dashboard"<?php if($currentPage=='dashboard' || $currentPage=='employer-dashboard') echo ' class="selected"'; ?>>
-        <a href="/Skillia/pages/<?php echo $_SESSION['user_type'] === 'employer' ? 'employer-dashboard.php' : 'dashboard.php'; ?>"><p>Dashboard</p></a>
+        <a href="/Skillia/pages/<?php echo $_SESSION['user_type'] === 'employer' ? 'employer-dashboard.php' : 'job-seeker-dashboard.php'; ?>"><p>Dashboard</p></a>
       </div>
       <div id="logout">
         <a href="/Skillia/pages/logout.php"><p>Logout</p></a>

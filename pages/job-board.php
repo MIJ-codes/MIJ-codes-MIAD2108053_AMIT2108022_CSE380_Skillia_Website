@@ -1,6 +1,6 @@
 <?php
 require_once '../includes/db.php';
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include '../includes/header.php';
 
 // Handle job application
@@ -102,10 +102,10 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'jobseeker') {
                                 }
                                 ?>
                                 <img src="<?= htmlspecialchars($avatar) ?>" alt="<?= htmlspecialchars($job['company_name'] ?? 'Personal') ?>" style="width:48px;height:48px;border-radius:50%;object-fit:cover;box-shadow:0 2px 8px #b39ddb22;">
-                            </div>
+                </div>
                             <div class="job-company-name">
                                 <?= ($job['job_post_type'] ?? 'company') === 'company' ? htmlspecialchars($job['company_name']) : 'Personal' ?>
-                            </div>
+            </div>
                 </div>
                 <div class="job-card-content">
                             <h3 class="job-title"><?= htmlspecialchars($job['title']) ?></h3>

@@ -1,5 +1,5 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once '../includes/db.php';
 include '../includes/header.php';
 
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_type'] = $user['user_type'];
             if ($user['user_type'] === 'jobseeker') {
-                header('Location: dashboard.php');
+                header('Location: job-seeker-dashboard.php');
             } else {
                 header('Location: employer-dashboard.php');
             }
@@ -75,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     particlesJS.load('particles-js', '../assets/js/particles.json', function() {});
   }
 </script>
+<script src="../assets/js/main.js"></script>
 <?php include '../includes/footer.php'; ?>
 </body>
 </html> 

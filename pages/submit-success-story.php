@@ -1,3 +1,6 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+?>
 <?php include '../includes/header.php'; ?>
 <link rel="stylesheet" href="/Skillia/assets/css/style.css" />
 <link rel="stylesheet" href="/Skillia/assets/css/job-seekers.css" />

@@ -1,3 +1,6 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+?>
 <?php $currentPage = 'privacy-policy'; ?>
 <!DOCTYPE html>
 <html lang="en">

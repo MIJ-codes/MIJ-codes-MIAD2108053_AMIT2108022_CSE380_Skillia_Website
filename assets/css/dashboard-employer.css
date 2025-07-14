@@ -1,0 +1,657 @@
+/* Employer Dashboard Styles */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(179, 157, 219, 0.15);
+    padding: 32px;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.dashboard-title {
+    color: #7c4dff;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #7c4dff, #9575cd);
+    color: white;
+    padding: 24px;
+    border-radius: 12px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: slideInLeft 0.6s ease-out;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(124, 77, 255, 0.3);
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    background: #f8f5ff;
+    padding: 8px;
+    border-radius: 12px;
+}
+
+.tab-btn {
+    padding: 12px 24px;
+    border: none;
+    background: transparent;
+    color: #7c4dff;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.tab-btn:hover::before {
+    left: 100%;
+}
+
+.tab-btn.active {
+    background: #7c4dff;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3);
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.section-title {
+    color: #7c4dff;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 32px 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f0f0;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: #7c4dff;
+    animation: slideInLeft 0.6s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.profile-form {
+    background: #f8f5ff;
+    padding: 24px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    border: 1px solid #e8e4f7;
+    transition: box-shadow 0.3s ease;
+}
+
+.profile-form:hover {
+    box-shadow: 0 8px 24px rgba(124, 77, 255, 0.1);
+}
+
+.profile-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #6c3fc5;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.profile-form input,
+.profile-form textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e8e4f7;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background: #fff;
+}
+
+.profile-form input:focus,
+.profile-form textarea:focus {
+    outline: none;
+    border-color: #7c4dff;
+    box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.1);
+}
+
+.profile-form textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.profile-form button {
+    background: linear-gradient(135deg, #7c4dff, #9575cd);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.profile-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(124, 77, 255, 0.3);
+}
+
+.message {
+    background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+    color: #2e7d32;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    border-left: 4px solid #4caf50;
+    animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.applications-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.application-card {
+    background: #fff;
+    border: 1px solid #e8e4f7;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.application-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(124, 77, 255, 0.15);
+    border-color: #7c4dff;
+}
+
+.application-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.job-title {
+    color: #7c4dff;
+    font-weight: 600;
+    font-size: 16px;
+    margin: 0 0 4px 0;
+}
+
+.company-name {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+.application-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #666;
+}
+
+.detail-item i {
+    color: #7c4dff;
+    font-size: 14px;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-pending {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.status-accepted {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.status-rejected {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.status-scheduled {
+  background: linear-gradient(90deg, #00bcd4 0%, #7c4dff 100%);
+  color: #fff;
+}
+
+.application-date {
+    font-size: 12px;
+    color: #999;
+    text-align: right;
+    margin-top: 12px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+}
+
+.empty-state i {
+    font-size: 48px;
+    color: #ddd;
+    margin-bottom: 16px;
+}
+
+.empty-state h3 {
+    margin: 0 0 8px 0;
+    color: #666;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.success-story-form {
+    background: #f8f5ff;
+    padding: 24px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    border: 1px solid #e8e4f7;
+}
+
+.success-story-form textarea {
+    width: 100%;
+    min-height: 120px;
+    border-radius: 8px;
+    border: 2px solid #e8e4f7;
+    padding: 16px;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+    resize: vertical;
+}
+
+.success-story-form textarea:focus {
+    outline: none;
+    border-color: #7c4dff;
+}
+
+.success-story-form button {
+    background: linear-gradient(135deg, #7c4dff, #9575cd);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    margin-top: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.success-story-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(124, 77, 255, 0.3);
+}
+
+.features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.features-list li {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.features-list li:hover {
+    background: #f8f5ff;
+    padding-left: 12px;
+    border-radius: 8px;
+}
+
+.features-list li:last-child {
+    border-bottom: none;
+}
+
+.features-list i {
+    color: #7c4dff;
+    font-size: 18px;
+}
+
+.features-list span {
+    color: #666;
+    font-size: 14px;
+}
+
+.features-list .coming-soon {
+    color: #999;
+    font-style: italic;
+    font-size: 12px;
+}
+
+.status-action-btn {
+    display: inline-block;
+    min-width: 90px;
+    padding: 8px 18px;
+    margin-right: 6px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    background: #7c4dff;
+    box-shadow: 0 2px 8px rgba(124,77,255,0.08);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+}
+.status-action-btn.accepted {
+    background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+}
+.status-action-btn.rejected {
+    background: linear-gradient(90deg, #ff5858 0%, #f09819 100%);
+}
+.status-action-btn.pending {
+    background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
+    color: #7c4dff;
+}
+.status-action-btn:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 4px 16px rgba(124,77,255,0.13);
+    filter: brightness(1.08);
+}
+.status-action-btn:active {
+    transform: scale(0.98);
+    filter: brightness(0.95);
+}
+.status-action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.schedule-interview-container, .edit-schedule-interview-container {
+  position: relative;
+  overflow: visible;
+  width: 100%;
+}
+.schedule-interview-btn, .edit-schedule-interview-btn {
+  display: inline-block;
+  padding: 10px 22px;
+  margin-left: 8px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.01rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #00bcd4 0%, #7c4dff 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px #b39ddb22;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  outline: none;
+  text-shadow: 0 1px 2px #512da8, 0 0 2px #fff;
+}
+.schedule-interview-btn:hover, .edit-schedule-interview-btn:hover {
+  background: linear-gradient(90deg, #7c4dff 0%, #00bcd4 100%);
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 4px 16px #b39ddb44;
+}
+.applicant-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px #b39ddb22;
+  padding: 38px 38px 28px 38px;
+  min-width: 370px;
+  max-width: 480px;
+  flex: 1 1 370px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: box-shadow 0.22s, transform 0.18s, min-height 0.4s cubic-bezier(.23,1.01,.32,1), padding 0.4s cubic-bezier(.23,1.01,.32,1);
+  border: 1.5px solid #ede7f6;
+  margin-bottom: 18px;
+  animation: fadeInUp 0.7s cubic-bezier(.23,1.01,.32,1) both;
+}
+.applicant-card.expanded {
+  min-height: 420px;
+  box-shadow: 0 8px 32px #b39ddb44;
+  transform: translateY(-18px) scale(1.04);
+  padding-bottom: 38px;
+  z-index: 10;
+}
+.applicant-card-footer {
+  margin-top: 22px;
+  text-align: right;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 16px;
+  justify-content: flex-start;
+}
+.applicant-card-footer > * {
+  margin-bottom: 10px;
+}
+.schedule-interview-btn, .edit-schedule-interview-btn, .view-profile-btn, .status-action-btn {
+  margin-bottom: 0 !important;
+  margin-right: 8px;
+}
+.schedule-interview-form, .edit-schedule-interview-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: #f7f4ff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #b39ddb22;
+  padding: 24px 22px 18px 22px;
+  margin-top: 18px;
+  transition: box-shadow 0.2s;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.schedule-interview-form label, .edit-schedule-interview-form label {
+  display: block;
+  font-weight: 700;
+  color: #512da8;
+  font-size: 1.13rem;
+  margin-bottom: 7px;
+}
+.schedule-interview-form input[type="date"],
+.schedule-interview-form input[type="time"],
+.schedule-interview-form input[type="text"],
+.schedule-interview-form textarea,
+.edit-schedule-interview-form input[type="date"],
+.edit-schedule-interview-form input[type="time"],
+.edit-schedule-interview-form input[type="text"],
+.edit-schedule-interview-form textarea {
+  width: 100%;
+  margin: 0 0 10px 0;
+  padding: 10px 14px;
+  border: 1.5px solid #d1c4e9;
+  border-radius: 7px;
+  font-size: 1.08rem;
+  background: #faf8ff;
+  transition: border-color 0.2s;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.schedule-interview-form textarea,
+.edit-schedule-interview-form textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+.schedule-interview-form input:focus, .schedule-interview-form textarea:focus,
+.edit-schedule-interview-form input:focus, .edit-schedule-interview-form textarea:focus {
+  border-color: #7c4dff;
+  outline: none;
+}
+.confirm-schedule-btn {
+  background: linear-gradient(90deg, #00bcd4 0%, #7c4dff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-weight: 700;
+  font-size: 1.08rem;
+  cursor: pointer;
+  margin-top: 8px;
+  align-self: flex-end;
+  box-shadow: 0 2px 8px #b39ddb22;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.confirm-schedule-btn:hover {
+  background: linear-gradient(90deg, #7c4dff 0%, #00bcd4 100%);
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 4px 16px #b39ddb44;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-container {
+        margin: 20px;
+        padding: 20px;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .applications-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .application-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .tabs {
+        flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+        flex: 1;
+        min-width: 120px;
+    }
+} 

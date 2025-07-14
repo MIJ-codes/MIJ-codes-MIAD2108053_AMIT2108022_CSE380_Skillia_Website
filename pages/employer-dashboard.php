@@ -1,5 +1,5 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once '../includes/db.php';
 
 // Access control: Only logged-in employers can access
@@ -58,7 +58,8 @@ if (isset($_POST['update_personal']) && $employer_id) {
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         $ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
         if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif'])) {
-            $target = '../assets/images/employer_' . $employer_id . '_' . time() . '.' . $ext;
+            $target = '../uploads/employer-profile/employer_' . $employer_id . '_' . time() . '.' . $ext;
+            if (!is_dir('../uploads/employer-profile/')) { mkdir('../uploads/employer-profile/', 0777, true); }
             if (move_uploaded_file($_FILES['photo']['tmp_name'], $target)) {
                 $newPhoto = $target;
             }
@@ -108,7 +109,8 @@ if (isset($_POST['update_profile']) && $employer_id) {
     if (isset($_FILES['company_logo']) && $_FILES['company_logo']['error'] === UPLOAD_ERR_OK) {
         $ext = strtolower(pathinfo($_FILES['company_logo']['name'], PATHINFO_EXTENSION));
         if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif'])) {
-            $target = '../assets/images/company_' . $employer_id . '_' . time() . '.' . $ext;
+            $target = '../uploads/company-profile/company_' . $employer_id . '_' . time() . '.' . $ext;
+            if (!is_dir('../uploads/company-profile/')) { mkdir('../uploads/company-profile/', 0777, true); }
             if (move_uploaded_file($_FILES['company_logo']['tmp_name'], $target)) {
                 $newLogo = $target;
             }
@@ -135,6 +137,70 @@ if (isset($_POST['delete_job_id']) && $employer_id) {
     exit;
 }
 
+// Handle interview scheduling
+if (isset($_POST['schedule_interview'], $_POST['application_id'], $_POST['job_id'], $_POST['job_seeker_id'], $_POST['interview_date'], $_POST['interview_time'], $_POST['location_medium'])) {
+    $application_id = (int)$_POST['application_id'];
+    if ($application_id > 0) {
+        $job_id = (int)$_POST['job_id'];
+        $job_seeker_id = (int)$_POST['job_seeker_id'];
+        $interview_date = $_POST['interview_date'];
+        $interview_time = $_POST['interview_time'];
+        $location_medium = trim($_POST['location_medium']);
+        $notes = trim($_POST['notes'] ?? '');
+        $status = 'scheduled';
+        // Insert interview
+        $stmt = $pdo->prepare('INSERT INTO interviews (application_id, employer_id, job_seeker_id, job_id, interview_date, interview_time, location_medium, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$application_id, $employer_id, $job_seeker_id, $job_id, $interview_date, $interview_time, $location_medium, $notes, $status]);
+        // Update application status to scheduled
+        $stmt = $pdo->prepare('UPDATE applications SET status = ? WHERE id = ?');
+        $stmt->execute(['scheduled', $application_id]);
+        // Fetch job and employer info for notification
+        $stmt = $pdo->prepare('SELECT j.title, e.company_name FROM jobs j JOIN employers e ON j.employer_id = e.id WHERE j.id = ?');
+        $stmt->execute([$job_id]);
+        $jobInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+        $jobTitle = $jobInfo['title'] ?? 'Job';
+        $companyName = $jobInfo['company_name'] ?? '';
+        // Create notification for job seeker
+        $notif_title = 'Interview Scheduled';
+        $notif_msg = "Your interview for '$jobTitle' at $companyName is scheduled on $interview_date at $interview_time ($location_medium).";
+        $stmt = $pdo->prepare('INSERT INTO notifications (user_id, user_type, title, message, type, related_id, related_type) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$job_seeker_id, 'job_seeker', $notif_title, $notif_msg, 'interview_scheduled', $job_id, 'job']);
+        echo "<script>alert('Interview scheduled successfully!');window.location.href='employer-dashboard.php';</script>";
+        exit;
+    } else {
+        echo "<script>alert('Error: Invalid application ID.');window.location.href='employer-dashboard.php';</script>";
+        exit;
+    }
+}
+
+// Handle application status update from dashboard
+if (isset($_POST['update_app_status'], $_POST['application_id'], $_POST['new_status'])) {
+    $application_id = (int)$_POST['application_id'];
+    $new_status = $_POST['new_status'];
+    if (in_array($new_status, ['accepted', 'rejected'])) {
+        $stmt = $pdo->prepare('UPDATE applications SET status = ? WHERE id = ?');
+        $stmt->execute([$new_status, $application_id]);
+        // Fetch job seeker, job, and employer info for notification
+        $stmt = $pdo->prepare('SELECT a.seeker_id, j.title, e.company_name FROM applications a JOIN jobs j ON a.job_id = j.id JOIN employers e ON j.employer_id = e.id WHERE a.id = ?');
+        $stmt->execute([$application_id]);
+        $info = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($info) {
+            $job_seeker_id = $info['seeker_id'];
+            $jobTitle = $info['title'] ?? 'Job';
+            $companyName = $info['company_name'] ?? '';
+            $notif_title = 'Application Update';
+            if ($new_status === 'accepted') {
+                $notif_msg = "Your application for '$jobTitle' at $companyName was marked as accepted.";
+            } else if ($new_status === 'rejected') {
+                $notif_msg = "Your application for '$jobTitle' at $companyName was marked as rejected.";
+            }
+            $notif_type = 'application_status';
+            $stmt = $pdo->prepare('INSERT INTO notifications (user_id, user_type, title, message, type, related_id, related_type) VALUES (?, ?, ?, ?, ?, ?, ?)');
+            $stmt->execute([$job_seeker_id, 'job_seeker', $notif_title, $notif_msg, $notif_type, $application_id, 'application']);
+        }
+    }
+}
+
 // Fetch jobs posted by this employer
 $jobs = [];
 if ($employer_id) {
@@ -153,6 +219,14 @@ if (!empty($jobs)) {
     }
 }
 
+// Fetch scheduled interviews for this employer
+$interviews = [];
+if ($employer_id) {
+    $stmt = $pdo->prepare('SELECT i.*, u.name as candidate_name, j.title as job_title FROM interviews i JOIN job_seekers js ON i.job_seeker_id = js.id JOIN users u ON js.user_id = u.id JOIN jobs j ON i.job_id = j.id WHERE i.employer_id = ? ORDER BY i.interview_date DESC, i.interview_time DESC');
+    $stmt->execute([$employer_id]);
+    $interviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 include '../includes/header.php';
 ?>
 <!DOCTYPE html>
@@ -162,6 +236,7 @@ include '../includes/header.php';
   <title>Employer Dashboard - Skillia</title>
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/dashboard-employer.css">
   <style>
     .dashboard-container {
         max-width: 1300px;
@@ -650,17 +725,69 @@ include '../includes/header.php';
                         <?php if (!empty($jobApplicants[$job['id']])): ?>
                             <div style="display: flex; flex-wrap: wrap; gap: 18px;">
                                 <?php foreach ($jobApplicants[$job['id']] as $app): ?>
+                                    <?php
+                                    // Check if interview exists for this application
+                                    $stmt = $pdo->prepare('SELECT COUNT(*) FROM interviews WHERE application_id = ?');
+                                    $stmt->execute([$app['id']]);
+                                    $hasInterview = $stmt->fetchColumn() > 0;
+                                    ?>
                                     <div class="applicant-card">
                                         <div class="applicant-card-header">
                                             <span class="applicant-name"><?= htmlspecialchars($app['name']) ?></span>
-                                            <span class="applicant-status status-<?= htmlspecialchars($app['status']) ?>">Status: <?= ucfirst($app['status']) ?></span>
+                                            <span class="applicant-status <?= $hasInterview ? 'status-scheduled' : 'status-' . htmlspecialchars($app['status']) ?>">
+                                                Status: <?= $hasInterview ? 'Scheduled' : ucfirst($app['status']) ?>
+                                            </span>
                                         </div>
                                         <div class="applicant-card-body">
                                             <div>Email: <a href="mailto:<?= htmlspecialchars($app['email']) ?>"><?= htmlspecialchars($app['email']) ?></a></div>
                                             <div>Applied: <?= date('M d, Y', strtotime($app['applied_at'])) ?></div>
                                         </div>
                                         <div class="applicant-card-footer">
-                                            <a href="view-applicant.php?user_id=<?= $app['user_id'] ?>" class="view-profile-btn">View Profile</a>
+                                            <a href="applicant-profile.php?user_id=<?= $app['user_id'] ?>&job_id=<?= $job['id'] ?>" class="view-profile-btn">View Profile</a>
+                                            <?php if (!$hasInterview): ?>
+                                            <form method="post" style="display:inline; margin-left:8px;">
+                                                <input type="hidden" name="application_id" value="<?= $app['id'] ?>">
+                                                <button type="submit" name="new_status" value="accepted" class="status-action-btn accepted" <?= $app['status'] === 'accepted' ? 'disabled' : '' ?>>Accept</button>
+                                                <button type="submit" name="new_status" value="rejected" class="status-action-btn rejected" <?= $app['status'] === 'rejected' ? 'disabled' : '' ?>>Reject</button>
+                                                <input type="hidden" name="update_app_status" value="1">
+                                            </form>
+                                            <?php endif; ?>
+                                            <?php if (!$hasInterview && $app['status'] === 'accepted'): ?>
+                                            <div class="schedule-interview-container" style="display:inline; margin-left:8px;">
+                                                <button type="button" class="schedule-interview-btn" onclick="toggleScheduleForm(this)">Schedule Interview</button>
+                                                <form method="post" class="schedule-interview-form" style="display:none; margin-top:14px; transition: max-height 0.4s cubic-bezier(.23,1.01,.32,1); overflow:hidden; max-height:0;">
+                                                    <input type="hidden" name="schedule_interview" value="1">
+                                                    <input type="hidden" name="application_id" value="<?= $app['id'] ?>">
+                                                    <input type="hidden" name="job_id" value="<?= $job['id'] ?>">
+                                                    <input type="hidden" name="job_seeker_id" value="<?= $app['seeker_id'] ?>">
+                                                    <label>Date: <input type="date" name="interview_date" required></label>
+                                                    <label>Time: <input type="time" name="interview_time" required></label>
+                                                    <label>Location/Medium: <input type="text" name="location_medium" placeholder="e.g. Zoom, Office" required></label>
+                                                    <label>Notes: <textarea name="notes" placeholder="Interview details (optional)"></textarea></label>
+                                                    <button type="submit" class="confirm-schedule-btn">Confirm Schedule</button>
+                                                </form>
+                                            </div>
+                                            <?php endif; ?>
+                                            <?php if ($hasInterview): ?>
+                                            <div class="edit-schedule-interview-container" style="display:inline; margin-left:8px;">
+                                                <button type="button" class="edit-schedule-interview-btn" onclick="toggleEditScheduleForm(this)">Edit Scheduled Interview</button>
+                                                <form method="post" class="edit-schedule-interview-form" style="display:none; margin-top:14px; transition: max-height 0.4s cubic-bezier(.23,1.01,.32,1); overflow:hidden; max-height:0;">
+                                                    <?php
+                                                    // Fetch interview details for this application
+                                                    $stmt = $pdo->prepare('SELECT * FROM interviews WHERE application_id = ? LIMIT 1');
+                                                    $stmt->execute([$app['id']]);
+                                                    $interview = $stmt->fetch(PDO::FETCH_ASSOC);
+                                                    ?>
+                                                    <input type="hidden" name="edit_interview" value="1">
+                                                    <input type="hidden" name="interview_id" value="<?= $interview['id'] ?? '' ?>">
+                                                    <label>Date: <input type="date" name="interview_date" value="<?= $interview['interview_date'] ?? '' ?>" required></label>
+                                                    <label>Time: <input type="time" name="interview_time" value="<?= $interview['interview_time'] ?? '' ?>" required></label>
+                                                    <label>Location/Medium: <input type="text" name="location_medium" value="<?= htmlspecialchars($interview['location_medium'] ?? '') ?>" required></label>
+                                                    <label>Notes: <textarea name="notes" placeholder="Interview details (optional)"><?= htmlspecialchars($interview['notes'] ?? '') ?></textarea></label>
+                                                    <button type="submit" class="confirm-schedule-btn">Save Changes</button>
+                                                </form>
+                                            </div>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -674,7 +801,34 @@ include '../includes/header.php';
         </section>
         <section class="dashboard-section dashboard-info-card">
             <h2>Manage Interviews</h2>
-            <p>Schedule and manage interviews with candidates. (Coming soon)</p>
+            <?php if (empty($interviews)): ?>
+                <p>No interviews scheduled yet.</p>
+            <?php else: ?>
+                <div style="overflow-x:auto;">
+                <table class="job-table">
+                    <tr>
+                        <th>Candidate</th>
+                        <th>Job</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Location/Medium</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                    </tr>
+                    <?php foreach ($interviews as $iv): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($iv['candidate_name']) ?></td>
+                        <td><?= htmlspecialchars($iv['job_title']) ?></td>
+                        <td><?= htmlspecialchars($iv['interview_date']) ?></td>
+                        <td><?= htmlspecialchars(substr($iv['interview_time'], 0, 5)) ?></td>
+                        <td><?= htmlspecialchars($iv['location_medium']) ?></td>
+                        <td><?= ucfirst($iv['status']) ?></td>
+                        <td><?= nl2br(htmlspecialchars($iv['notes'])) ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+                </div>
+            <?php endif; ?>
         </section>
         <section class="dashboard-section dashboard-info-card">
             <h2>Other Features</h2>
@@ -731,6 +885,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+
+function toggleScheduleForm(btn) {
+    const form = btn.parentElement.querySelector('.schedule-interview-form');
+    const card = btn.closest('.applicant-card');
+    if (form.style.display === 'none' || !form.style.display) {
+        form.style.display = 'block';
+        setTimeout(() => { form.style.maxHeight = '500px'; card.classList.add('expanded'); }, 10);
+    } else {
+        form.style.maxHeight = '0';
+        setTimeout(() => { form.style.display = 'none'; card.classList.remove('expanded'); }, 400);
+    }
+}
+
+function toggleEditScheduleForm(btn) {
+    const form = btn.parentElement.querySelector('.edit-schedule-interview-form');
+    const card = btn.closest('.applicant-card');
+    if (form.style.display === 'none' || !form.style.display) {
+        form.style.display = 'block';
+        setTimeout(() => { form.style.maxHeight = '500px'; card.classList.add('expanded'); }, 10);
+    } else {
+        form.style.maxHeight = '0';
+        setTimeout(() => { form.style.display = 'none'; card.classList.remove('expanded'); }, 400);
+    }
+}
 </script>
 </body>
 </html> 
