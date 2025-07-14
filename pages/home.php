@@ -7,7 +7,7 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Skillia - Home</title>
-  <link rel="stylesheet" href="/Skillia/assets/css/style.css" />
+  <link rel="stylesheet" href="/Skillia/assets/css/home.css" />
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
   <script src="/Skillia/assets/js/main.js"></script>
 </head>
@@ -41,18 +41,28 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
   <div id="page2">
     <div id="p2h">
       <h1>Categories</h1>
-      <h1>See all</h1>
+      <h1><a href="/Skillia/pages/categories.php" style="color:inherit;text-decoration:underline;cursor:pointer;">See all</a></h1>
     </div>
     <div id="cbox">
-      <div class="card"><img src="/Skillia/assets/images/Programming_&_Tech_Logo.png" alt="Programming & Tech" /><p>Programming & <br />Tech</p></div>
-      <div class="card"><img src="/Skillia/assets/images/Graphics_&_Design_Logo.png" alt="Graphics & Design" /><p>Graphics & Design</p></div>
-      <div class="card"><img src="/Skillia/assets/images/Digital_Marketing_Logo.png" alt="Digital Marketing" /><p>Digital Marketing</p></div>
-      <div class="card"><img src="/Skillia/assets/images/Writing_&_Translation_Logo.png" alt="Writing & Translation" /><p>Writing & Translation</p></div>
-      <div class="card"><img src="/Skillia/assets/images/Video_&_Animation_Logo.png" alt="Video & Animation" /><p>Video & Animation</p></div>
-      <div class="card"><img src="/Skillia/assets/images/AI_Services_Logo.png" alt="AI Services" /><p>AI Services</p></div>
-      <div class="card"><img src="/Skillia/assets/images/Music_&_Audio_Logo.png" alt="Music & Audio" /><p>Music & Audio</p></div>
-      <div class="card"><img src="/Skillia/assets/images/Business_Logo.png" alt="Business" /><p>Business</p></div>
-      <div class="card"><img src="/Skillia/assets/images/Consulting_Logo.png" alt="Consulting" /><p>Consulting</p></div>
+      <?php
+      require_once __DIR__ . '/../includes/db.php';
+      $stmt = $pdo->query('
+          SELECT c.*, COUNT(j.id) AS job_count
+          FROM categories c
+          LEFT JOIN jobs j ON c.id = j.category_id
+          GROUP BY c.id
+          ORDER BY job_count DESC, c.id ASC
+          LIMIT 9
+      ');
+      $categories = $stmt->fetchAll();
+      foreach ($categories as $cat): ?>
+        <a href="/Skillia/pages/job-board.php?category=<?= $cat['id'] ?>" style="text-decoration:none;color:inherit;">
+          <div class="card">
+            <div class="category-icon"><i class="<?= htmlspecialchars($cat['icon']) ?>" style="font-size:2.2rem;"></i></div>
+            <p><?= htmlspecialchars($cat['name']) ?></p>
+          </div>
+        </a>
+      <?php endforeach; ?>
     </div>
     <div id="popularbox">
       <h1>Popular Services</h1>

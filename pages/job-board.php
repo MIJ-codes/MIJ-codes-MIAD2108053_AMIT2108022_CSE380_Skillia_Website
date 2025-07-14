@@ -30,14 +30,31 @@ if (isset($_POST['apply_job_id']) && isset($_SESSION['user_id']) && $_SESSION['u
     }
 }
 
-// Fetch jobs with employer and company name, logo, and photo
-$stmt = $pdo->prepare('
-    SELECT jobs.*, employers.company_name, employers.company_logo, employers.photo
-    FROM jobs
-    JOIN employers ON jobs.employer_id = employers.id
-    ORDER BY jobs.created_at DESC
-');
-$stmt->execute();
+// Fetch all categories for filter
+$categories = $pdo->query('SELECT id, name FROM categories ORDER BY name ASC')->fetchAll();
+$selectedCategory = isset($_GET['category']) ? (int)$_GET['category'] : 0;
+
+// Fetch jobs with optional category filter
+if ($selectedCategory) {
+    $stmt = $pdo->prepare('
+        SELECT jobs.*, employers.company_name, employers.company_logo, employers.photo, categories.name AS category_name
+        FROM jobs
+        JOIN employers ON jobs.employer_id = employers.id
+        LEFT JOIN categories ON jobs.category_id = categories.id
+        WHERE jobs.category_id = ?
+        ORDER BY jobs.created_at DESC
+    ');
+    $stmt->execute([$selectedCategory]);
+} else {
+    $stmt = $pdo->prepare('
+        SELECT jobs.*, employers.company_name, employers.company_logo, employers.photo, categories.name AS category_name
+        FROM jobs
+        JOIN employers ON jobs.employer_id = employers.id
+        LEFT JOIN categories ON jobs.category_id = categories.id
+        ORDER BY jobs.created_at DESC
+    ');
+    $stmt->execute();
+}
 $jobs = $stmt->fetchAll();
 
 // Fetch applied jobs for the current seeker (for button state)
@@ -71,6 +88,15 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'jobseeker') {
         <div class="job-board-hero-content">
             <h1 class="job-board-hero-title">Job Board</h1>
             <p class="job-board-hero-subtitle">Explore all available jobs and find your next opportunity</p>
+            <form method="get" style="margin: 20px 0;">
+                <label for="category" style="font-weight:500;margin-right:8px;">Filter by Category:</label>
+                <select name="category" id="category" onchange="this.form.submit()" style="padding:8px 16px;border-radius:8px;">
+                    <option value="">All Categories</option>
+                    <?php foreach ($categories as $cat): ?>
+                        <option value="<?= $cat['id'] ?>" <?= $selectedCategory == $cat['id'] ? 'selected' : '' ?>><?= htmlspecialchars($cat['name']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </form>
             <?php if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'employer'): ?>
                 <div class="job-board-post-section">
                     <div class="job-board-post-title">Want to hire?</div>
@@ -109,6 +135,11 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'jobseeker') {
                 </div>
                 <div class="job-card-content">
                             <h3 class="job-title"><?= htmlspecialchars($job['title']) ?></h3>
+                            <?php if (!empty($job['category_name'])): ?>
+                                <span class="job-category-badge" style="display:inline-block;background:#e1e5f2;color:#667eea;font-size:0.95rem;font-weight:600;border-radius:12px;padding:2px 12px;margin-bottom:8px;vertical-align:middle;">
+                                    <?= htmlspecialchars($job['category_name']) ?>
+                                </span>
+                            <?php endif; ?>
                     <div class="job-meta">
                                 <span><i class="ri-map-pin-line"></i> <?= htmlspecialchars($job['location']) ?></span>
                                 <span><i class="ri-money-dollar-circle-line"></i> <?= htmlspecialchars($job['salary']) ?></span>

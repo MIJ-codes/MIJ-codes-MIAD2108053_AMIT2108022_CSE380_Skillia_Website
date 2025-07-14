@@ -29,7 +29,8 @@ $jobData = [
     'salary' => '',
     'description' => '',
     'job_post_type' => 'company',
-    'company_name' => $companyName
+    'company_name' => $companyName,
+    'category_id' => ''
 ];
 if ($jobId) {
     $stmt = $pdo->prepare('SELECT * FROM jobs WHERE id = ? AND employer_id = ?');
@@ -50,6 +51,7 @@ if ($jobId) {
         $jobData['description'] = $job['description'];
         $jobData['job_post_type'] = $job['job_post_type'] ?? 'company';
         $jobData['company_name'] = $job['company_name'] ?? $companyName;
+        $jobData['category_id'] = $job['category_id'] ?? '';
     } else {
         // Invalid job or not owned by this employer
         header('Location: employer-dashboard.php');
@@ -66,20 +68,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description'] ?? '');
     $job_post_type = $_POST['job_post_type'] ?? 'company';
     $company_name_input = trim($_POST['company_name'] ?? '');
+    $category_id = $_POST['category_id'] ?? '';
     $now = date('Y-m-d H:i:s');
     // Company name logic
     $finalCompanyName = ($job_post_type === 'company') ? $company_name_input : 'Personal';
-    if ($title && $location && $jobType && $salary && $description && $company_name_input) {
+    if ($title && $location && $jobType && $salary && $description && $company_name_input && $category_id) {
         if ($editMode) {
             // UPDATE
-            $stmt = $pdo->prepare('UPDATE jobs SET title=?, description=?, location=?, salary=?, updated_at=?, job_post_type=?, company_name=? WHERE id=? AND employer_id=?');
-            $stmt->execute([$title, $description, $location . ' (' . $jobType . ')', $salary, $now, $job_post_type, $company_name_input, $jobId, $employer_id]);
+            $stmt = $pdo->prepare('UPDATE jobs SET title=?, description=?, location=?, salary=?, updated_at=?, job_post_type=?, company_name=?, category_id=? WHERE id=? AND employer_id=?');
+            $stmt->execute([$title, $description, $location . ' (' . $jobType . ')', $salary, $now, $job_post_type, $company_name_input, $category_id, $jobId, $employer_id]);
             header('Location: post-job.php?id=' . $jobId . '&success=1');
             exit;
         } else {
             // INSERT
-            $stmt = $pdo->prepare('INSERT INTO jobs (employer_id, title, description, location, salary, created_at, updated_at, job_post_type, company_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
-            $stmt->execute([$employer_id, $title, $description, $location . ' (' . $jobType . ')', $salary, $now, $now, $job_post_type, $company_name_input]);
+            $stmt = $pdo->prepare('INSERT INTO jobs (employer_id, title, description, location, salary, created_at, updated_at, job_post_type, company_name, category_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            $stmt->execute([$employer_id, $title, $description, $location . ' (' . $jobType . ')', $salary, $now, $now, $job_post_type, $company_name_input, $category_id]);
             header('Location: post-job.php?success=1');
             exit;
         }
@@ -93,8 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $jobData['description'] = $description;
         $jobData['job_post_type'] = $job_post_type;
         $jobData['company_name'] = $company_name_input;
+        $jobData['category_id'] = $category_id;
     }
 }
+// Fetch all categories for dropdown
+$categories = $pdo->query('SELECT id, name FROM categories ORDER BY name ASC')->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -193,6 +199,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group">
                 <label for="description">Job Description</label>
                 <textarea id="description" name="description" rows="5" placeholder="Describe the job role, requirements, and responsibilities..." required><?= htmlspecialchars($jobData['description']) ?></textarea>
+            </div>
+            <div class="form-group">
+                <label for="category_id">Job Category</label>
+                <select id="category_id" name="category_id" required>
+                    <option value="">Select category</option>
+                    <?php foreach ($categories as $cat): ?>
+                        <option value="<?= $cat['id'] ?>" <?= $jobData['category_id'] == $cat['id'] ? 'selected' : '' ?>><?= htmlspecialchars($cat['name']) ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
             <button type="submit" class="post-job-btn">
                 <span><?= $editMode ? 'Update Job' : 'Post Job' ?></span>
