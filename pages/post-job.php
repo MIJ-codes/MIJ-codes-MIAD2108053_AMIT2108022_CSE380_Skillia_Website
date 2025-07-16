@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once '../includes/db.php';
 include '../includes/header.php';
@@ -30,7 +33,8 @@ $jobData = [
     'description' => '',
     'job_post_type' => 'company',
     'company_name' => $companyName,
-    'category_id' => ''
+    'category_id' => '',
+    'experience_level' => ''
 ];
 if ($jobId) {
     $stmt = $pdo->prepare('SELECT * FROM jobs WHERE id = ? AND employer_id = ?');
@@ -52,6 +56,7 @@ if ($jobId) {
         $jobData['job_post_type'] = $job['job_post_type'] ?? 'company';
         $jobData['company_name'] = $job['company_name'] ?? $companyName;
         $jobData['category_id'] = $job['category_id'] ?? '';
+        $jobData['experience_level'] = $job['experience_level'] ?? '';
     } else {
         // Invalid job or not owned by this employer
         header('Location: employer-dashboard.php');
@@ -62,8 +67,9 @@ if ($jobId) {
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['jobTitle'] ?? '');
-    $location = trim($_POST['location'] ?? '');
     $jobType = trim($_POST['jobType'] ?? '');
+    $location = trim($_POST['location'] ?? '');
+    $experience_level = trim($_POST['experience_level'] ?? '');
     $salary = trim($_POST['salary'] ?? '');
     $description = trim($_POST['description'] ?? '');
     $job_post_type = $_POST['job_post_type'] ?? 'company';
@@ -72,17 +78,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $now = date('Y-m-d H:i:s');
     // Company name logic
     $finalCompanyName = ($job_post_type === 'company') ? $company_name_input : 'Personal';
-    if ($title && $location && $jobType && $salary && $description && $company_name_input && $category_id) {
+    if ($title && $location && $jobType && $salary && $description && $company_name_input && $category_id && $experience_level) {
         if ($editMode) {
             // UPDATE
-            $stmt = $pdo->prepare('UPDATE jobs SET title=?, description=?, location=?, salary=?, updated_at=?, job_post_type=?, company_name=?, category_id=? WHERE id=? AND employer_id=?');
-            $stmt->execute([$title, $description, $location . ' (' . $jobType . ')', $salary, $now, $job_post_type, $company_name_input, $category_id, $jobId, $employer_id]);
+            $stmt = $pdo->prepare('UPDATE jobs SET title=?, description=?, location=?, experience_level=?, salary=?, updated_at=?, job_post_type=?, company_name=?, category_id=? WHERE id=? AND employer_id=?');
+            $stmt->execute([$title, $description, $location . ' (' . $jobType . ')', $experience_level, $salary, $now, $job_post_type, $company_name_input, $category_id, $jobId, $employer_id]);
+            if ($stmt->errorCode() !== '00000') {
+                print_r($stmt->errorInfo());
+                exit;
+            }
             header('Location: post-job.php?id=' . $jobId . '&success=1');
             exit;
         } else {
             // INSERT
-            $stmt = $pdo->prepare('INSERT INTO jobs (employer_id, title, description, location, salary, created_at, updated_at, job_post_type, company_name, category_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-            $stmt->execute([$employer_id, $title, $description, $location . ' (' . $jobType . ')', $salary, $now, $now, $job_post_type, $company_name_input, $category_id]);
+            $stmt = $pdo->prepare('INSERT INTO jobs (employer_id, title, description, location, experience_level, salary, created_at, updated_at, job_post_type, company_name, category_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            $stmt->execute([$employer_id, $title, $description, $location . ' (' . $jobType . ')', $experience_level, $salary, $now, $now, $job_post_type, $company_name_input, $category_id]);
+            if ($stmt->errorCode() !== '00000') {
+                print_r($stmt->errorInfo());
+                exit;
+            }
             header('Location: post-job.php?success=1');
             exit;
         }
@@ -97,6 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $jobData['job_post_type'] = $job_post_type;
         $jobData['company_name'] = $company_name_input;
         $jobData['category_id'] = $category_id;
+        $jobData['experience_level'] = $experience_level;
     }
 }
 // Fetch all categories for dropdown
@@ -180,17 +195,53 @@ $categories = $pdo->query('SELECT id, name FROM categories ORDER BY name ASC')->
             </div>
             <div class="form-group">
                 <label for="location">Location</label>
-                <input type="text" id="location" name="location" placeholder="e.g. Dhaka, Bangladesh" required value="<?= htmlspecialchars($jobData['location']) ?>">
+                <div class="custom-category-dropdown location-dropdown" tabindex="0">
+                    <span class="selected-category">
+                        <?= $jobData['location'] ? htmlspecialchars($jobData['location']) : 'Select Location' ?>
+                    </span>
+                    <ul class="category-options" style="display:none;">
+                        <li data-value="">Select Location</li>
+                        <li data-value="Remote" <?= $jobData['location'] === 'Remote' ? 'class="selected"' : '' ?>>Remote</li>
+                        <li data-value="New York" <?= $jobData['location'] === 'New York' ? 'class="selected"' : '' ?>>New York</li>
+                        <li data-value="San Francisco" <?= $jobData['location'] === 'San Francisco' ? 'class="selected"' : '' ?>>San Francisco</li>
+                        <li data-value="London" <?= $jobData['location'] === 'London' ? 'class="selected"' : '' ?>>London</li>
+                        <li data-value="Berlin" <?= $jobData['location'] === 'Berlin' ? 'class="selected"' : '' ?>>Berlin</li>
+                        <li data-value="Dhaka, Bangladesh" <?= $jobData['location'] === 'Dhaka, Bangladesh' ? 'class="selected"' : '' ?>>Dhaka, Bangladesh</li>
+                    </ul>
+                    <input type="hidden" name="location" value="<?= htmlspecialchars($jobData['location']) ?>">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="experience_level">Experience Level</label>
+                <div class="custom-category-dropdown experience-dropdown" tabindex="0">
+                    <span class="selected-category">
+                        <?= $jobData['experience_level'] ? htmlspecialchars($jobData['experience_level']) : 'Select Experience Level' ?>
+                    </span>
+                    <ul class="category-options" style="display:none;">
+                        <li data-value="">Select Experience Level</li>
+                        <li data-value="Entry Level" <?= (isset($jobData['experience_level']) && $jobData['experience_level'] === 'Entry Level') ? 'class="selected"' : '' ?>>Entry Level</li>
+                        <li data-value="Mid Level" <?= (isset($jobData['experience_level']) && $jobData['experience_level'] === 'Mid Level') ? 'class="selected"' : '' ?>>Mid Level</li>
+                        <li data-value="Senior Level" <?= (isset($jobData['experience_level']) && $jobData['experience_level'] === 'Senior Level') ? 'class="selected"' : '' ?>>Senior Level</li>
+                        <li data-value="Manager" <?= (isset($jobData['experience_level']) && $jobData['experience_level'] === 'Manager') ? 'class="selected"' : '' ?>>Manager</li>
+                    </ul>
+                    <input type="hidden" name="experience_level" value="<?= htmlspecialchars($jobData['experience_level']) ?>">
+                </div>
             </div>
             <div class="form-group">
                 <label for="jobType">Job Type</label>
-                <select id="jobType" name="jobType" required>
-                    <option value="">Select type</option>
-                    <option value="Full-time" <?= $jobData['jobType'] === 'Full-time' ? 'selected' : '' ?>>Full Time</option>
-                    <option value="Part-time" <?= $jobData['jobType'] === 'Part-time' ? 'selected' : '' ?>>Part Time</option>
-                    <option value="Contract" <?= $jobData['jobType'] === 'Contract' ? 'selected' : '' ?>>Contract</option>
-                    <option value="Internship" <?= $jobData['jobType'] === 'Internship' ? 'selected' : '' ?>>Internship</option>
-                </select>
+                <div class="custom-category-dropdown type-dropdown" tabindex="0">
+                    <span class="selected-category">
+                        <?= $jobData['jobType'] ? htmlspecialchars($jobData['jobType']) : 'Select type' ?>
+                    </span>
+                    <ul class="category-options" style="display:none;">
+                        <li data-value="">Select type</li>
+                        <li data-value="Full-time" <?= $jobData['jobType'] === 'Full-time' ? 'class="selected"' : '' ?>>Full Time</li>
+                        <li data-value="Part-time" <?= $jobData['jobType'] === 'Part-time' ? 'class="selected"' : '' ?>>Part Time</li>
+                        <li data-value="Contract" <?= $jobData['jobType'] === 'Contract' ? 'class="selected"' : '' ?>>Contract</li>
+                        <li data-value="Internship" <?= $jobData['jobType'] === 'Internship' ? 'class="selected"' : '' ?>>Internship</li>
+                    </ul>
+                    <input type="hidden" name="jobType" value="<?= htmlspecialchars($jobData['jobType']) ?>">
+                </div>
             </div>
             <div class="form-group">
                 <label for="salary">Salary Range</label>
@@ -202,12 +253,21 @@ $categories = $pdo->query('SELECT id, name FROM categories ORDER BY name ASC')->
             </div>
             <div class="form-group">
                 <label for="category_id">Job Category</label>
-                <select id="category_id" name="category_id" required>
-                    <option value="">Select category</option>
-                    <?php foreach ($categories as $cat): ?>
-                        <option value="<?= $cat['id'] ?>" <?= $jobData['category_id'] == $cat['id'] ? 'selected' : '' ?>><?= htmlspecialchars($cat['name']) ?></option>
-                    <?php endforeach; ?>
-                </select>
+                <div class="custom-category-dropdown category-dropdown" tabindex="0">
+                    <span class="selected-category">
+                        <?php
+                        $catLabel = $jobData['category_id'] ? htmlspecialchars($categories[array_search($jobData['category_id'], array_column($categories, 'id'))]['name']) : 'Select category';
+                        echo $catLabel;
+                        ?>
+                    </span>
+                    <ul class="category-options" style="display:none;">
+                        <li data-value="">Select category</li>
+                        <?php foreach ($categories as $cat): ?>
+                            <li data-value="<?= $cat['id'] ?>" <?= $jobData['category_id'] == $cat['id'] ? 'class="selected"' : '' ?>><?= htmlspecialchars($cat['name']) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <input type="hidden" name="category_id" value="<?= htmlspecialchars($jobData['category_id']) ?>">
+                </div>
             </div>
             <button type="submit" class="post-job-btn">
                 <span><?= $editMode ? 'Update Job' : 'Post Job' ?></span>
@@ -218,25 +278,85 @@ $categories = $pdo->query('SELECT id, name FROM categories ORDER BY name ASC')->
 </div>
 <?php include '../includes/footer.php'; ?>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const companyRadio = document.querySelector('input[name="job_post_type"][value="company"]');
-    const personalRadio = document.querySelector('input[name="job_post_type"][value="personal"]');
-    const companyNameInput = document.getElementById('company_name');
-    const employerCompanyName = <?= json_encode($companyName) ?>;
-    function setCompanyNameReadonly(val) {
-        companyNameInput.value = val;
-        companyNameInput.readOnly = true;
+// Portal dropdown menu logic for post-job page
+(function() {
+    let openDropdown = null;
+    let originalParent = null;
+    let originalNextSibling = null;
+    let portalMenu = null;
+
+    function closeDropdown() {
+        if (openDropdown && portalMenu) {
+            // Move menu back to original parent
+            if (originalParent && portalMenu) {
+                originalParent.insertBefore(portalMenu, originalNextSibling);
+                portalMenu.style.position = '';
+                portalMenu.style.left = '';
+                portalMenu.style.top = '';
+                portalMenu.style.width = '';
+                portalMenu.style.zIndex = '';
+                portalMenu.style.display = 'none';
+            }
+            openDropdown.classList.remove('open');
+            openDropdown = null;
+            portalMenu = null;
+            originalParent = null;
+            originalNextSibling = null;
+        }
     }
-    companyRadio.addEventListener('change', function() {
-        if (this.checked) setCompanyNameReadonly(employerCompanyName);
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.custom-category-dropdown').forEach(function(dropdown) {
+            const selected = dropdown.querySelector('.selected-category');
+            const menu = dropdown.querySelector('.category-options');
+            const hiddenInput = dropdown.querySelector('input[type="hidden"]');
+            // Set initial selected label
+            const initial = menu.querySelector('li.selected');
+            if (initial) selected.textContent = initial.textContent;
+            // Open/close dropdown
+            dropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (openDropdown === dropdown) {
+                    closeDropdown();
+                    return;
+                }
+                closeDropdown();
+                openDropdown = dropdown;
+                portalMenu = menu;
+                originalParent = menu.parentNode;
+                originalNextSibling = menu.nextSibling;
+                // Move menu to body
+                document.body.appendChild(menu);
+                // Position menu below dropdown
+                const rect = dropdown.getBoundingClientRect();
+                menu.style.position = 'absolute';
+                menu.style.left = rect.left + 'px';
+                menu.style.top = (rect.bottom + window.scrollY) + 'px';
+                menu.style.width = rect.width + 'px';
+                menu.style.zIndex = 9999;
+                menu.style.display = 'block';
+                dropdown.classList.add('open');
+            });
+            // Option select
+            menu.querySelectorAll('li').forEach(function(option) {
+                option.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selected.textContent = option.textContent;
+                    hiddenInput.value = option.getAttribute('data-value');
+                    menu.querySelectorAll('li').forEach(li => li.classList.remove('selected'));
+                    option.classList.add('selected');
+                    closeDropdown();
+                });
+            });
+        });
+        // Close on outside click
+        document.addEventListener('click', function() {
+            closeDropdown();
+        });
+        // Close on resize only (not on scroll)
+        window.addEventListener('resize', closeDropdown);
     });
-    personalRadio.addEventListener('change', function() {
-        if (this.checked) setCompanyNameReadonly('Personal');
-    });
-    // On page load, enforce readonly and correct value
-    if (companyRadio.checked) setCompanyNameReadonly(employerCompanyName);
-    if (personalRadio.checked) setCompanyNameReadonly('Personal');
-});
+})();
 </script>
 </body>
 </html> 

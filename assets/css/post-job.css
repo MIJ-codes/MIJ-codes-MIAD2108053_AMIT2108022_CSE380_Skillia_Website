@@ -362,6 +362,7 @@
     box-shadow: 0 8px 32px rgba(81,45,168,0.08);
     position: relative;
     z-index: 3;
+    overflow: visible !important;
 }
 
 .post-job-content-section h2 {
@@ -378,12 +379,18 @@
     width: 100%;
     max-width: 440px;
     margin: 0 auto;
+    overflow: visible !important;
+    z-index: 1;
+    position: relative;
 }
 
 .post-job-form .form-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    margin-bottom: 24px;
+    z-index: 1;
+    position: relative;
 }
 
 .post-job-form label {
@@ -453,6 +460,93 @@
   box-shadow: 0 2px 8px #b9f6ca33;
   animation: fadeIn 0.7s;
   display: block;
+}
+
+/* Custom Category Dropdown Styles (copied from job-board.css for consistency) */
+.custom-category-dropdown {
+    position: relative;
+    display: inline-block;
+    min-width: 220px;
+    background: linear-gradient(135deg, #e6fff7 0%, #e6eaff 100%);
+    border: 2px solid #00b894;
+    border-radius: 24px;
+    padding: 12px 48px 12px 24px;
+    font-size: 1.05rem;
+    color: #222;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(0,150,255,0.10);
+    transition: box-shadow 0.2s, border 0.2s, background 0.2s;
+    outline: none;
+    z-index: 3000;
+    margin-bottom: 0; /* remove extra space */
+}
+.custom-category-dropdown:after {
+    content: '\25BC';
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #00b894;
+    font-size: 1.2rem;
+    pointer-events: none;
+    transition: color 0.2s;
+}
+.custom-category-dropdown:focus,
+.custom-category-dropdown.open {
+    border: 2px solid #7c4dff;
+    background: linear-gradient(135deg, #e6eaff 0%, #e6fff7 100%);
+    box-shadow: 0 4px 24px rgba(0,150,255,0.18);
+}
+.selected-category {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+}
+.category-options {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 110%;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,150,255,0.18); /* increased shadow for separation */
+    margin: 0;
+    padding: 8px 0;
+    list-style: none;
+    z-index: 4000; /* increased z-index to prevent overlap */
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1.5px solid #e6eaff;
+    animation: fadeInDropdown 0.2s;
+}
+@keyframes fadeInDropdown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.category-options li {
+    padding: 10px 24px;
+    font-size: 1.05rem;
+    color: #222;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 12px;
+    margin: 0 6px;
+}
+.category-options li.selected,
+.category-options li:hover,
+.category-options li:focus {
+    background: linear-gradient(135deg, #e6fff7 0%, #e6eaff 100%);
+    color: #00b894;
+}
+.custom-category-dropdown.open .category-options {
+    z-index: 9999;
+}
+
+html, body, .post-job-main {
+    overflow: visible !important;
 }
 
 @media (max-width: 700px) {

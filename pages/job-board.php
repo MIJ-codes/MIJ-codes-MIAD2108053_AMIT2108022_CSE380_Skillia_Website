@@ -33,28 +33,37 @@ if (isset($_POST['apply_job_id']) && isset($_SESSION['user_id']) && $_SESSION['u
 // Fetch all categories for filter
 $categories = $pdo->query('SELECT id, name FROM categories ORDER BY name ASC')->fetchAll();
 $selectedCategory = isset($_GET['category']) ? (int)$_GET['category'] : 0;
+$selectedLocation = isset($_GET['location']) ? $_GET['location'] : '';
+$selectedExperience = isset($_GET['experience_level']) ? $_GET['experience_level'] : '';
+$searchTerm = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Fetch jobs with optional category filter
+// Fetch jobs with optional filters
+$where = [];
+$params = [];
 if ($selectedCategory) {
-    $stmt = $pdo->prepare('
-        SELECT jobs.*, employers.company_name, employers.company_logo, employers.photo, categories.name AS category_name
-        FROM jobs
-        JOIN employers ON jobs.employer_id = employers.id
-        LEFT JOIN categories ON jobs.category_id = categories.id
-        WHERE jobs.category_id = ?
-        ORDER BY jobs.created_at DESC
-    ');
-    $stmt->execute([$selectedCategory]);
-} else {
-    $stmt = $pdo->prepare('
-        SELECT jobs.*, employers.company_name, employers.company_logo, employers.photo, categories.name AS category_name
-        FROM jobs
-        JOIN employers ON jobs.employer_id = employers.id
-        LEFT JOIN categories ON jobs.category_id = categories.id
-        ORDER BY jobs.created_at DESC
-    ');
-    $stmt->execute();
+    $where[] = 'jobs.category_id = ?';
+    $params[] = $selectedCategory;
 }
+if ($selectedLocation) {
+    $where[] = 'jobs.location LIKE ?';
+    $params[] = $selectedLocation . '%';
+}
+if ($selectedExperience) {
+    $where[] = 'jobs.experience_level = ?';
+    $params[] = $selectedExperience;
+}
+if ($searchTerm !== '') {
+    $where[] = '(jobs.title LIKE ? OR jobs.description LIKE ?)';
+    $params[] = "%$searchTerm%";
+    $params[] = "%$searchTerm%";
+}
+$sql = 'SELECT jobs.*, employers.company_name, employers.company_logo, employers.photo, categories.name AS category_name FROM jobs JOIN employers ON jobs.employer_id = employers.id LEFT JOIN categories ON jobs.category_id = categories.id';
+if ($where) {
+    $sql .= ' WHERE ' . implode(' AND ', $where);
+}
+$sql .= ' ORDER BY jobs.created_at DESC';
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
 $jobs = $stmt->fetchAll();
 
 // Fetch applied jobs for the current seeker (for button state)
@@ -88,15 +97,65 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'jobseeker') {
         <div class="job-board-hero-content">
             <h1 class="job-board-hero-title">Job Board</h1>
             <p class="job-board-hero-subtitle">Explore all available jobs and find your next opportunity</p>
-            <form method="get" style="margin: 20px 0;">
-                <label for="category" style="font-weight:500;margin-right:8px;">Filter by Category:</label>
-                <select name="category" id="category" onchange="this.form.submit()" style="padding:8px 16px;border-radius:8px;">
-                    <option value="">All Categories</option>
-                    <?php foreach ($categories as $cat): ?>
-                        <option value="<?= $cat['id'] ?>" <?= $selectedCategory == $cat['id'] ? 'selected' : '' ?>><?= htmlspecialchars($cat['name']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </form>
+            <div class="job-board-hero-controls">
+                <div class="job-board-search-row">
+                    <form class="search-container" method="get" action="">
+                        <input type="text" name="search" class="job-board-search-input" placeholder="Search for jobs..." value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
+                        <button type="submit" class="search-icon" aria-label="Search"><i class="ri-search-line"></i></button>
+                    </form>
+                </div>
+                <form method="get" id="categoryFilterForm">
+                    <label for="category" style="font-weight:500;margin-right:8px;">Filter by:</label>
+                    <div class="custom-category-dropdown" tabindex="0">
+                        <span class="selected-category">
+                            <?php
+                            $catName = 'All Categories';
+                            foreach ($categories as $cat) {
+                                if ($selectedCategory == $cat['id']) $catName = htmlspecialchars($cat['name']);
+                            }
+                            echo $catName;
+                            ?>
+                        </span>
+                        <ul class="category-options" style="display:none;">
+                            <li data-value="">All Categories</li>
+                            <?php foreach ($categories as $cat): ?>
+                                <li data-value="<?= $cat['id'] ?>" <?= $selectedCategory == $cat['id'] ? 'class="selected"' : '' ?>><?= htmlspecialchars($cat['name']) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <input type="hidden" name="category" id="categoryHiddenInput" value="<?= $selectedCategory ? $selectedCategory : '' ?>">
+                    </div>
+                    <!-- Location Dropdown -->
+                    <div class="custom-category-dropdown location-dropdown" tabindex="0">
+                        <span class="selected-category">
+                            <?= $selectedLocation ? htmlspecialchars($selectedLocation) : 'All Locations' ?>
+                        </span>
+                        <ul class="category-options" style="display:none;">
+                            <li data-value="">All Locations</li>
+                            <li data-value="Remote" <?= $selectedLocation === 'Remote' ? 'class="selected"' : '' ?>>Remote</li>
+                            <li data-value="New York" <?= $selectedLocation === 'New York' ? 'class="selected"' : '' ?>>New York</li>
+                            <li data-value="San Francisco" <?= $selectedLocation === 'San Francisco' ? 'class="selected"' : '' ?>>San Francisco</li>
+                            <li data-value="London" <?= $selectedLocation === 'London' ? 'class="selected"' : '' ?>>London</li>
+                            <li data-value="Berlin" <?= $selectedLocation === 'Berlin' ? 'class="selected"' : '' ?>>Berlin</li>
+                            <li data-value="Dhaka, Bangladesh" <?= $selectedLocation === 'Dhaka, Bangladesh' ? 'class="selected"' : '' ?>>Dhaka, Bangladesh</li>
+                        </ul>
+                        <input type="hidden" name="location" id="locationHiddenInput" value="<?= htmlspecialchars($selectedLocation) ?>">
+                    </div>
+                    <!-- Experience Level Dropdown -->
+                    <div class="custom-category-dropdown experience-dropdown" tabindex="0">
+                        <span class="selected-category">
+                            <?= $selectedExperience ? htmlspecialchars($selectedExperience) : 'All Experience Levels' ?>
+                        </span>
+                        <ul class="category-options" style="display:none;">
+                            <li data-value="">All Experience Levels</li>
+                            <li data-value="Entry Level" <?= $selectedExperience === 'Entry Level' ? 'class="selected"' : '' ?>>Entry Level</li>
+                            <li data-value="Mid Level" <?= $selectedExperience === 'Mid Level' ? 'class="selected"' : '' ?>>Mid Level</li>
+                            <li data-value="Senior Level" <?= $selectedExperience === 'Senior Level' ? 'class="selected"' : '' ?>>Senior Level</li>
+                            <li data-value="Manager" <?= $selectedExperience === 'Manager' ? 'class="selected"' : '' ?>>Manager</li>
+                        </ul>
+                        <input type="hidden" name="experience_level" id="experienceHiddenInput" value="<?= htmlspecialchars($selectedExperience) ?>">
+                    </div>
+                </form>
+            </div>
             <?php if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'employer'): ?>
                 <div class="job-board-post-section">
                     <div class="job-board-post-title">Want to hire?</div>

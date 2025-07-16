@@ -201,4 +201,73 @@ document.addEventListener('DOMContentLoaded', function () {
             openDropdown = null;
         }
     });
+});
+
+// Custom dropdown logic for all .custom-category-dropdown (from categories.js)
+document.querySelectorAll('.custom-category-dropdown').forEach(function(dropdown) {
+    const selected = dropdown.querySelector('.selected-category');
+    const options = dropdown.querySelector('.category-options');
+    const hiddenInput = dropdown.querySelector('input[type="hidden"]');
+    // Set initial selected label
+    const initial = options.querySelector('li.selected');
+    if (initial) selected.textContent = initial.textContent;
+    // Open/close dropdown
+    dropdown.addEventListener('click', function(e) {
+        options.style.display = options.style.display === 'block' ? 'none' : 'block';
+        dropdown.classList.toggle('open');
+    });
+    // Option select
+    options.addEventListener('click', function(e) {
+        if (e.target.tagName.toLowerCase() === 'li') {
+            options.querySelectorAll('li').forEach(li => li.classList.remove('selected'));
+            e.target.classList.add('selected');
+            selected.textContent = e.target.textContent;
+            hiddenInput.value = e.target.getAttribute('data-value');
+            options.style.display = 'none';
+            dropdown.classList.remove('open');
+            // Submit the form on selection
+            document.getElementById('categoryFilterForm').submit();
+        }
+    });
+    // Close on outside click
+    document.addEventListener('mousedown', function(e) {
+        if (!dropdown.contains(e.target)) {
+            options.style.display = 'none';
+            dropdown.classList.remove('open');
+        }
+    });
+    // Keyboard navigation
+    dropdown.addEventListener('keydown', function(e) {
+        const items = Array.from(options.querySelectorAll('li'));
+        let idx = items.findIndex(li => li.classList.contains('selected'));
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            options.style.display = 'block';
+            dropdown.classList.add('open');
+            idx = (idx + 1) % items.length;
+            items.forEach(li => li.classList.remove('selected'));
+            items[idx].classList.add('selected');
+            items[idx].scrollIntoView({block:'nearest'});
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            options.style.display = 'block';
+            dropdown.classList.add('open');
+            idx = (idx - 1 + items.length) % items.length;
+            items.forEach(li => li.classList.remove('selected'));
+            items[idx].classList.add('selected');
+            items[idx].scrollIntoView({block:'nearest'});
+        } else if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (options.style.display === 'block') {
+                const sel = options.querySelector('li.selected');
+                if (sel) sel.click();
+            } else {
+                options.style.display = 'block';
+                dropdown.classList.add('open');
+            }
+        } else if (e.key === 'Escape') {
+            options.style.display = 'none';
+            dropdown.classList.remove('open');
+        }
+    });
 }); 

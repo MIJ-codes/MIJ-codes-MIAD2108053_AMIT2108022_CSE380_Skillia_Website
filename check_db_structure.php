@@ -53,4 +53,57 @@ try {
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage() . "\n";
 }
+
+// Run this script once to update the database structure for locations and experience levels
+require_once 'includes/db.php';
+
+try {
+    // 1. Create locations table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS locations (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL UNIQUE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+    // 2. Create experience_levels table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS experience_levels (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL UNIQUE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+    // 3. Insert default locations if not exists
+    $defaultLocations = ['Remote', 'On-site', 'Hybrid'];
+    foreach ($defaultLocations as $loc) {
+        $stmt = $pdo->prepare("INSERT IGNORE INTO locations (name) VALUES (?)");
+        $stmt->execute([$loc]);
+    }
+
+    // 4. Insert default experience levels if not exists
+    $defaultExp = ['Entry Level', 'Mid Level', 'Senior Level'];
+    foreach ($defaultExp as $exp) {
+        $stmt = $pdo->prepare("INSERT IGNORE INTO experience_levels (name) VALUES (?)");
+        $stmt->execute([$exp]);
+    }
+
+    // 5. Add location_id and experience_level_id columns to jobs table if not exists
+    $cols = $pdo->query("SHOW COLUMNS FROM jobs")->fetchAll(PDO::FETCH_COLUMN);
+    if (!in_array('location_id', $cols)) {
+        $pdo->exec("ALTER TABLE jobs ADD COLUMN location_id INT NULL AFTER location");
+    }
+    if (!in_array('experience_level_id', $cols)) {
+        $pdo->exec("ALTER TABLE jobs ADD COLUMN experience_level_id INT NULL AFTER salary");
+    }
+
+    // 6. Add job_type column if not exists (for completeness)
+    if (!in_array('job_type', $cols)) {
+        $pdo->exec("ALTER TABLE jobs ADD COLUMN job_type VARCHAR(50) NULL AFTER experience_level_id");
+    }
+
+    // 7. Add foreign key constraints (if not already present)
+    $pdo->exec("ALTER TABLE jobs ADD CONSTRAINT IF NOT EXISTS fk_jobs_location_id FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE SET NULL");
+    $pdo->exec("ALTER TABLE jobs ADD CONSTRAINT IF NOT EXISTS fk_jobs_experience_level_id FOREIGN KEY (experience_level_id) REFERENCES experience_levels(id) ON DELETE SET NULL");
+
+    echo "Database structure updated successfully.";
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
 ?> 
