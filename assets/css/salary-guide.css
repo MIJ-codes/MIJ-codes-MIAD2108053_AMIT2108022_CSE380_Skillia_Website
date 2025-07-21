@@ -133,15 +133,30 @@
 }
 
 .sg-calculator-form {
-    background: #fff;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(255,112,67,0.10);
-    padding: 40px;
-    border: 2px solid rgba(255,214,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
 }
-
+.sg-form-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+}
 .sg-form-group {
-    margin-bottom: 24px;
+    flex: 1 1 0;
+    min-width: 260px;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .sg-form-group label {
@@ -152,28 +167,27 @@
     font-size: 1rem;
 }
 
-.sg-form-group input,
-.sg-form-group select {
-    width: 100%;
+/* Salary Guide Form Field Styles (match custom dropdown) */
+.sg-calculator-form input[type="text"],
+.sg-calculator-form select,
+.sg-calculator-form textarea {
     padding: 12px 16px;
-    border: 2px solid #fff3e0;
+    border: 1.5px solid #ff7043;
     border-radius: 12px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background: #fff;
-}
-
-.sg-form-group input:focus,
-.sg-form-group select:focus {
+    font-size: 1.05rem;
+    background: linear-gradient(135deg, #fff7e6 0%, #f3e8ff 100%);
+    color: #222;
+    font-weight: 500;
+    transition: box-shadow 0.2s, border 0.2s, background 0.2s;
     outline: none;
-    border-color: #ff7043;
-    box-shadow: 0 0 0 3px rgba(255,112,67,0.10);
+    box-shadow: 0 2px 12px rgba(255, 112, 67, 0.08);
 }
-
-.sg-form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+.sg-calculator-form input[type="text"]:focus,
+.sg-calculator-form select:focus,
+.sg-calculator-form textarea:focus {
+    border: 1.5px solid #7c4dff;
+    background: linear-gradient(135deg, #f3e8ff 0%, #fffde7 100%);
+    box-shadow: 0 4px 24px rgba(124, 77, 255, 0.13);
 }
 
 .sg-calculate-btn {
@@ -227,6 +241,99 @@
 .sg-market-section {
     background: #f8f9fa;
     padding: 80px 0;
+}
+
+/* --- CATEGORY SECTION --- */
+.sg-category-section {
+    background: #fff;
+    padding: 80px 0;
+}
+
+.sg-category-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.sg-category-title {
+    font-size: 2.2rem;
+    color: #7c4dff;
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.sg-category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+    margin-top: 32px;
+}
+
+.sg-category-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(255, 112, 67, 0.08);
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 214, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.sg-category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(255, 112, 67, 0.15);
+}
+
+.sg-category-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #ff7043 0%, #ffd600 70%, #7c4dff 100%);
+}
+
+.sg-category-card h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #ff7043;
+}
+
+.sg-category-card .salary-range {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #ffd600;
+}
+
+.sg-category-card .job-stats {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.sg-category-card .total-jobs {
+    font-weight: 500;
+    color: #7c4dff;
+}
+
+.sg-category-card .increase-rate {
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+.sg-category-card p {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
 }
 
 .sg-market-container {
@@ -465,4 +572,141 @@
     .sg-industries-grid {
         grid-template-columns: 1fr;
     }
+} 
+
+/* Custom Category Dropdown Styles (Salary Guide theme, squared) */
+.custom-category-dropdown {
+    position: relative;
+    display: inline-block;
+    min-width: 220px;
+    background: linear-gradient(135deg, #fff7e6 0%, #f3e8ff 100%);
+    border: 1.5px solid #ff7043;
+    border-radius: 12px;
+    padding: 12px 40px 12px 16px;
+    font-size: 1.05rem;
+    color: #222;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(255, 112, 67, 0.08);
+    transition: box-shadow 0.2s, border 0.2s, background 0.2s;
+    outline: none;
+    z-index: 100;
+    margin-bottom: 0;
+}
+.custom-category-dropdown:after {
+    content: '\25BC';
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ff7043;
+    font-size: 1.2rem;
+    pointer-events: none;
+    transition: color 0.2s;
+}
+.custom-category-dropdown:focus,
+.custom-category-dropdown.open {
+    border: 1.5px solid #7c4dff;
+    background: linear-gradient(135deg, #f3e8ff 0%, #fffde7 100%);
+    box-shadow: 0 4px 24px rgba(124, 77, 255, 0.13);
+}
+.selected-category {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+}
+.category-options {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 110%;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(255, 112, 67, 0.13);
+    margin: 0;
+    padding: 8px 0;
+    list-style: none;
+    z-index: 200;
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1.5px solid #f3e8ff;
+    animation: fadeInDropdown 0.2s;
+}
+@keyframes fadeInDropdown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.category-options li {
+    padding: 10px 24px;
+    font-size: 1.05rem;
+    color: #222;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 8px;
+    margin: 0 6px;
+}
+.category-options li.selected,
+.category-options li:hover,
+.category-options li:focus {
+    background: linear-gradient(135deg, #ffe082 0%, #e1bee7 100%);
+    color: #7c4dff;
+}
+.custom-category-dropdown.open .category-options {
+    z-index: 9999;
+} 
+
+/* Custom select dropdown menu styling for Salary Guide */
+.sg-calculator-form select {
+    border: 1.5px solid #ff7043;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #fff7e6 0%, #f3e8ff 100%);
+    color: #222;
+    font-size: 1.05rem;
+    font-weight: 500;
+    padding: 12px 40px 12px 16px;
+    box-shadow: 0 2px 12px rgba(255, 112, 67, 0.08);
+    transition: box-shadow 0.2s, border 0.2s, background 0.2s;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+}
+.sg-calculator-form select:focus {
+    border: 1.5px solid #7c4dff;
+    background: linear-gradient(135deg, #f3e8ff 0%, #fffde7 100%);
+    box-shadow: 0 4px 24px rgba(124, 77, 255, 0.13);
+}
+.sg-calculator-form select option {
+    background: linear-gradient(135deg, #fff7e6 0%, #f3e8ff 100%);
+    color: #222;
+    font-size: 1.05rem;
+    border-radius: 8px;
+    padding: 10px 24px;
+    margin: 0 6px;
+}
+.sg-calculator-form select option:checked,
+.sg-calculator-form select option:focus,
+.sg-calculator-form select option:hover {
+    background: linear-gradient(135deg, #ffe082 0%, #e1bee7 100%);
+    color: #7c4dff;
+}
+/* Custom scrollbar for select dropdown (Webkit browsers) */
+.sg-calculator-form select::-webkit-scrollbar {
+    width: 8px;
+    background: #f3e8ff;
+    border-radius: 8px;
+}
+.sg-calculator-form select::-webkit-scrollbar-thumb {
+    background: #ffe082;
+    border-radius: 8px;
+}
+/* Custom arrow for select */
+.sg-calculator-form select {
+    background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ff7043' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 22px 22px;
 } 
