@@ -62,16 +62,34 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
       <?php endforeach; ?>
     </div>
     <div id="popularbox">
-      <h1>Popular Services</h1>
+      <!-- Removed Popular Services section -->
     </div>
-    <div id="pbox">
-      <div class="bigcard"><p>Website Development</p><img src="https://fiverr-res.cloudinary.com/q_auto,f_auto,w_188,dpr_2.0/v1/attachments/generic_asset/asset/798403f5b92b1b5af997acc704a3d21c-1702465156477/website-development.png" alt="Website Development" /></div>
-      <div class="bigcard"><p>Video Editing</p><img src="https://fiverr-res.cloudinary.com/q_auto,f_auto,w_188,dpr_2.0/v1/attachments/generic_asset/asset/798403f5b92b1b5af997acc704a3d21c-1702465156494/video-editing.png" alt="Video Editing" /></div>
-      <div class="bigcard"><p>Software Development</p><img src="https://fiverr-res.cloudinary.com/q_auto,f_auto,w_188,dpr_2.0/v1/attachments/generic_asset/asset/798403f5b92b1b5af997acc704a3d21c-1702465156476/software-development.png" alt="Software Development" /></div>
-      <div class="bigcard"><p>SEO</p><img src="https://fiverr-res.cloudinary.com/q_auto,f_auto,w_188,dpr_2.0/v1/attachments/generic_asset/asset/798403f5b92b1b5af997acc704a3d21c-1702465156488/seo.png" alt="SEO" /></div>
-      <div class="bigcard"><p>Architecture & Interior Design</p><img src="https://fiverr-res.cloudinary.com/q_auto,f_auto,w_188,dpr_2.0/v1/attachments/generic_asset/asset/798403f5b92b1b5af997acc704a3d21c-1702465156473/architecture-design.png" alt="Architecture & Interior Design" /></div>
-      <div class="bigcard"><p>Book Design</p><img src="https://fiverr-res.cloudinary.com/q_auto,f_auto,w_188,dpr_2.0/v1/attachments/generic_asset/asset/af48c6702af221956ea7adf0055854e6-1745826082297/Book%20Design.png" alt="Book Design" /></div>
-    </div>
+    <!-- Animated Success Counter Section -->
+    <?php
+    require_once __DIR__ . '/../includes/db.php';
+    $jobsCount = $pdo->query('SELECT COUNT(*) FROM jobs')->fetchColumn();
+    $hiredCount = $pdo->query('SELECT COUNT(*) FROM applications')->fetchColumn();
+    $employersCount = $pdo->query('SELECT COUNT(*) FROM employers')->fetchColumn();
+    $seekersCount = $pdo->query('SELECT COUNT(*) FROM job_seekers')->fetchColumn();
+    ?>
+    <section id="success-counter" style="margin: 60px auto 40px auto; max-width: 900px; background: #fff; border-radius: 20px; box-shadow: 0 4px 24px rgba(81,45,168,0.07); padding: 36px 24px 28px 24px; text-align: center; position:relative; z-index:10;">
+      <h2 class="animated-heading" style="color:#512da8;font-size:2rem;margin-bottom:24px;">Skillia in Numbers</h2>
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:40px;">
+        <div class="counter-block animated-card"><div class="counter-num" data-target="<?= $jobsCount ?>">0</div><div class="counter-label">Jobs Posted</div></div>
+        <div class="counter-block animated-card"><div class="counter-num" data-target="<?= $hiredCount ?>">0</div><div class="counter-label">People Hired</div></div>
+        <div class="counter-block animated-card"><div class="counter-num" data-target="<?= $employersCount ?>">0</div><div class="counter-label">Active Employers</div></div>
+        <div class="counter-block animated-card"><div class="counter-num" data-target="<?= $seekersCount ?>">0</div><div class="counter-label">Active Job Seekers</div></div>
+      </div>
+    </section>
+    <!-- Homepage Call-to-Action -->
+    <section id="homepage-cta" style="margin: 40px auto 60px auto; max-width: 700px; background: #fff; border-radius: 20px; box-shadow: 0 4px 24px rgba(81,45,168,0.07); padding: 36px 24px 28px 24px; text-align: center; position:relative; z-index:10;">
+      <h2 class="animated-heading" style="color:#512da8;font-size:2rem;margin-bottom:18px;">Get Started in 30 Seconds</h2>
+      <p style="font-size:1.15rem;color:#555;margin-bottom:24px;">No account? No problem. Start exploring instantly!</p>
+      <div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;">
+        <a href="/Skillia/pages/job-board.php" class="cta-btn homepage-cta-btn" style="padding:16px 38px;background:linear-gradient(135deg,#7c4dff 0%,#512da8 100%);color:#fff;font-weight:700;font-size:1.1rem;border-radius:12px;text-decoration:none;">Find Jobs Now</a>
+        <a href="/Skillia/pages/post-job.php" class="cta-btn homepage-cta-btn" style="padding:16px 38px;background:linear-gradient(135deg,#512da8 0%,#7c4dff 100%);color:#fff;font-weight:700;font-size:1.1rem;border-radius:12px;text-decoration:none;">Post a Job</a>
+      </div>
+    </section>
   </div>
 </div>
 <div class="bottom-blob"></div>
@@ -156,6 +174,26 @@ function addRipple(card) {
   });
 }
 document.querySelectorAll('.card, .bigcard').forEach(addRipple);
+// Animated Counter
+(function() {
+  function animateCounter(el, target, duration = 2000) {
+    let start = 0;
+    const increment = Math.ceil(target / (duration / 16));
+    let current = start;
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        current = target;
+        clearInterval(timer);
+      }
+      el.textContent = current.toLocaleString();
+    }, 16);
+  }
+  document.querySelectorAll('.counter-num').forEach(el => {
+    const target = parseInt(el.getAttribute('data-target'));
+    animateCounter(el, target, 1800 + Math.random()*800);
+  });
+})();
 </script>
 <style>
 .particle-bubble {

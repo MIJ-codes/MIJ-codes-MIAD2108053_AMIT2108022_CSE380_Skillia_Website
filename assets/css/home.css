@@ -1400,3 +1400,165 @@ a {
     0% { color: #2a1a4d; }
     100% { color: #764ba2; }
 } 
+
+.animated-card {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+.animated-card:nth-child(1) { animation-delay: 0.2s; }
+.animated-card:nth-child(2) { animation-delay: 0.4s; }
+.animated-card:nth-child(3) { animation-delay: 0.6s; }
+.animated-card:nth-child(4) { animation-delay: 0.8s; }
+
+.animated-heading {
+  opacity: 1;
+  transform: none;
+  animation: colorPulse 2.5s 1.5s infinite alternate;
+}
+
+.homepage-cta-btn {
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(81,45,168,0.10);
+}
+.homepage-cta-btn:hover {
+  box-shadow: 0 6px 24px rgba(81,45,168,0.18);
+  transform: translateY(-2px) scale(1.04);
+  animation: bounceBtn 0.3s;
+} 
+
+.counter-block {
+  background: linear-gradient(135deg, #f6f6fb 60%, #e6eaff 100%);
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(81,45,168,0.10), 0 1.5px 8px rgba(81,45,168,0.08);
+  padding: 32px 28px 24px 28px;
+  min-width: 160px;
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+  transition: box-shadow 0.3s, transform 0.3s, border 0.3s;
+  overflow: hidden;
+  border: 2px solid #7c4dff;
+  animation: popIn 0.5s cubic-bezier(.77,0,.18,1);
+}
+.counter-block::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 22px;
+  background: conic-gradient(from 0deg, #7c4dff, #512da8, #7c4dff, #fff, #7c4dff);
+  opacity: 0.18;
+  z-index: -1;
+  animation: spin 3s linear infinite;
+}
+.counter-block:hover {
+  box-shadow: 0 12px 36px rgba(81,45,168,0.18);
+  border-color: #7c4dff;
+  transform: translateY(-6px) scale(1.04);
+  animation: bounceBtn 0.2s;
+}
+.counter-num {
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: #512da8;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  animation: colorPulse 2.5s infinite alternate;
+  transition: color 0.3s;
+}
+.counter-block:hover .counter-num {
+  color: #7c4dff;
+  animation: colorPulse 1.2s infinite alternate;
+}
+.counter-label {
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 600;
+  margin-top: 2px;
+  letter-spacing: 0.2px;
+} 
+
+/* Salary & Job Trends Widget Styles */
+#salary-trends-widget {
+  background: linear-gradient(135deg, #f6f6fb 60%, #e6eaff 100%);
+  border-radius: 22px;
+  box-shadow: 0 8px 32px rgba(81,45,168,0.10), 0 2px 12px rgba(81,45,168,0.08);
+  padding: 44px 32px 32px 32px;
+  max-width: 420px;
+  margin: 60px auto 40px auto;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+  transition: box-shadow 0.3s, transform 0.3s;
+  animation: popIn 0.8s cubic-bezier(.77,0,.18,1);
+}
+#salary-trends-widget:hover {
+  box-shadow: 0 16px 48px rgba(81,45,168,0.16);
+  transform: translateY(-4px) scale(1.02);
+}
+#salary-trends-widget .animated-heading {
+  font-size: 2rem;
+  color: #512da8;
+  margin-bottom: 24px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+#salary-trends-widget label {
+  color: #512da8;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-right: 8px;
+}
+#salary-trends-widget select {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1.5px solid #b39ddb;
+  font-size: 1.08rem;
+  background: #fff;
+  color: #512da8;
+  font-weight: 600;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1.5px 8px rgba(81,45,168,0.06);
+}
+#salary-trends-widget select:focus {
+  border-color: #7c4dff;
+  box-shadow: 0 4px 16px rgba(81,45,168,0.10);
+}
+#salary-trends-widget #trend-result {
+  margin: 22px 0 18px 0;
+  font-size: 1.13rem;
+  color: #333;
+  font-weight: 500;
+  line-height: 1.7;
+}
+#salary-trends-widget #trend-result strong {
+  color: #2a1a4d;
+  font-size: 1.13rem;
+  font-weight: 700;
+}
+#salary-trends-widget #trend-link {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 12px 36px;
+  background: linear-gradient(90deg,#7c4dff 0%,#512da8 100%);
+  color: #fff;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.13rem;
+  box-shadow: 0 2px 8px rgba(81,45,168,0.10);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+#salary-trends-widget #trend-link:hover {
+  box-shadow: 0 6px 24px rgba(81,45,168,0.18);
+  transform: translateY(-2px) scale(1.04);
+  background: linear-gradient(90deg,#512da8 0%,#7c4dff 100%);
+} 

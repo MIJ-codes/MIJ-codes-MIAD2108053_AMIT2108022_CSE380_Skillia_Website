@@ -126,7 +126,7 @@ if ($admin_id) {
         <a href="admin-users.php">Manage Users</a>
         <a href="admin-jobs.php">Manage Jobs</a>
         <a href="admin-applications.php">Manage Applications</a>
-        <a href="admin-career-resources.php">Manage Career Resources</a>
+        <a href="admin-success-stories.php">Manage Success Stories</a>
         <a href="manage-admins.php" class="add-admin-btn">Add / Manage Admins</a>
     </div>
 </div>

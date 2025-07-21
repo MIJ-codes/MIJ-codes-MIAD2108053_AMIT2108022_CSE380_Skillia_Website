@@ -135,23 +135,23 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
     <!-- Quick Actions & Career Resources Section (placeholder for backend) -->
     <section class="categories-actions-section">
         <div class="categories-actions-inner">
-            <div class="categories-actions-grid">
-                <div class="categories-action-card">
-                    <h3>Browse Jobs</h3>
-                    <p>Preview sample jobs for each category and see what fits you best.</p>
-                    <a href="job-board.php" class="categories-action-btn">Browse Jobs</a>
-                </div>
-                <div class="categories-action-card">
-                    <h3>Salary Calculator</h3>
-                    <p>Estimate your earning potential by category and experience level.</p>
-                    <a href="salary-guide.php#calculator" class="categories-action-btn">Calculate Salary</a>
-                </div>
+        <div class="categories-actions-grid">
+            <div class="categories-action-card">
+                <h3>Browse Jobs</h3>
+                <p>Preview sample jobs for each category and see what fits you best.</p>
+                <a href="job-board.php" class="categories-action-btn">Browse Jobs</a>
+            </div>
+            <div class="categories-action-card">
+                <h3>Salary Calculator</h3>
+                <p>Estimate your earning potential by category and experience level.</p>
+                <a href="salary-guide.php#calculator" class="categories-action-btn">Calculate Salary</a>
+            </div>
                 <div class="categories-career-resources">
                     <h3>Career Resources</h3>
                     <p>Access expert guides, in-demand skills, and certification tips to advance your career.</p>
                     <a href="career-resources.php" class="categories-action-btn" style="margin-top: 18px;">Explore Resources</a>
                 </div>
-            </div>
+        </div>
         </div>
     </section>
 </div>

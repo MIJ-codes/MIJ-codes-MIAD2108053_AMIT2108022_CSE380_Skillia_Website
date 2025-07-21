@@ -805,3 +805,204 @@ body {
     margin-bottom: 0;
     color: #f3e5f5;
 } 
+
+/* --- EMPLOYERS NEW SECTIONS --- */
+.employers-why-skillia {
+    margin: 60px auto 40px auto;
+    max-width: 900px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(81,45,168,0.07);
+    padding: 36px 24px 28px 24px;
+    text-align: center;
+    animation: fadeIn 1.2s ease;
+}
+.why-skillia-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 24px;
+}
+.why-skillia-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f6f6fb;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(81,45,168,0.06);
+    padding: 22px 18px;
+    min-width: 160px;
+    max-width: 200px;
+    font-size: 1.05rem;
+    color: #4b2994;
+    transition: transform 0.25s, box-shadow 0.25s;
+    animation: fadeIn 1.2s ease;
+}
+.why-skillia-item i {
+    font-size: 2rem;
+    color: #764ba2;
+    margin-bottom: 10px;
+    animation: iconPulse 2.5s infinite;
+    background: none;
+    border-radius: 50%;
+    box-shadow: 0 0 12px 0 rgba(118,75,162,0.10);
+    padding: 0;
+    display: inline-block;
+}
+.why-skillia-item:hover {
+    transform: translateY(-6px) scale(1.04);
+    box-shadow: 0 8px 32px rgba(81,45,168,0.13);
+}
+
+.employers-how-it-works {
+    margin: 40px auto 40px auto;
+    max-width: 900px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(81,45,168,0.07);
+    padding: 36px 24px 28px 24px;
+    text-align: center;
+    animation: fadeIn 1.2s 0.2s backwards;
+}
+.how-it-works-steps {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 24px;
+}
+.how-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f6f6fb;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(81,45,168,0.06);
+    padding: 22px 18px;
+    min-width: 120px;
+    max-width: 160px;
+    font-size: 1.05rem;
+    color: #4b2994;
+    transition: transform 0.25s, box-shadow 0.25s;
+    animation: fadeIn 1.2s 0.2s backwards;
+}
+.how-step:hover {
+    transform: translateY(-6px) scale(1.04);
+    box-shadow: 0 8px 32px rgba(81,45,168,0.13);
+}
+.step-num {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(81,45,168,0.13);
+    animation: stepPulse 2.5s infinite;
+}
+
+.employers-testimonials {
+    margin: 40px auto 40px auto;
+    max-width: 900px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(81,45,168,0.07);
+    padding: 36px 24px 28px 24px;
+    text-align: center;
+    animation: fadeIn 1.2s 0.4s backwards;
+}
+.testimonials-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 24px;
+}
+.testimonial-item {
+    background: #f6f6fb;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(81,45,168,0.06);
+    padding: 22px 18px;
+    min-width: 220px;
+    max-width: 320px;
+    font-size: 1.05rem;
+    color: #4b2994;
+    font-style: italic;
+    transition: transform 0.25s, box-shadow 0.25s;
+    animation: fadeIn 1.2s 0.4s backwards;
+}
+.testimonial-item span {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.98rem;
+    color: #764ba2;
+    font-style: normal;
+    font-weight: 600;
+}
+.testimonial-item:hover {
+    transform: translateY(-6px) scale(1.04);
+    box-shadow: 0 8px 32px rgba(81,45,168,0.13);
+}
+
+.employers-cta {
+    margin: 40px auto 60px auto;
+    max-width: 900px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
+    text-align: center;
+    animation: fadeIn 1.2s 0.6s backwards;
+}
+.employers-cta-btn {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 16px 38px;
+    border-radius: 12px;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(81,45,168,0.12);
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    display: inline-block;
+    border: none;
+    animation: fadeIn 1.2s 0.6s backwards;
+}
+.employers-cta-btn:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 8px 32px rgba(81,45,168,0.22);
+    color: #fff;
+}
+.employers-cta-link {
+    color: #764ba2;
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding: 16px 24px;
+    border-radius: 10px;
+    text-decoration: underline;
+    background: #f6f6fb;
+    transition: background 0.2s, color 0.2s;
+    display: inline-block;
+    animation: fadeIn 1.2s 0.7s backwards;
+}
+.employers-cta-link:hover {
+    background: #e1bee7;
+    color: #4b2994;
+}
+
+@media (max-width: 900px) {
+    .why-skillia-grid, .how-it-works-steps, .testimonials-grid, .employers-cta {
+        flex-direction: column;
+        gap: 18px;
+    }
+    .employers-why-skillia, .employers-how-it-works, .employers-testimonials, .employers-cta {
+        padding: 24px 8px 18px 8px;
+    }
+} 

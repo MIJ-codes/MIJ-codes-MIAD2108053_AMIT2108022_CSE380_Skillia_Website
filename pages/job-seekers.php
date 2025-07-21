@@ -118,51 +118,19 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
   <!-- Success Stories Section -->
   <?php
-  // Simulate database stories (replace with DB fetch in future)
-  $successStories = [
-    [
-      'name' => 'Ananya Sharma',
-      'job_title' => 'UX Designer',
-      'company' => 'TechCorp',
-      'story' => 'Skillia helped me transition from teaching to tech. I found my dream job as a UX designer within 3 months!',
-      'image' => 'https://via.placeholder.com/80x80/512da8/ffffff?text=A',
-    ],
-    [
-      'name' => 'Rahul Kumar',
-      'job_title' => 'Senior Developer',
-      'company' => 'StartupInc',
-      'story' => 'The career resources section was invaluable. Their interview tips helped me land a senior developer role!',
-      'image' => 'https://via.placeholder.com/80x80/512da8/ffffff?text=R',
-    ],
-    [
-      'name' => 'Priya Patel',
-      'job_title' => 'Marketing Manager',
-      'company' => 'GrowthCo',
-      'story' => 'Job alerts kept me updated with opportunities that matched my skills perfectly. Got hired in 2 weeks!',
-      'image' => 'https://via.placeholder.com/80x80/512da8/ffffff?text=P',
-    ],
-    [
-      'name' => 'Jatin Mehra',
-      'job_title' => 'Remote Software Engineer',
-      'company' => 'Cloudify',
-      'story' => 'I never thought I\'d find a remote job so quickly. Skillia\'s filters made it easy to find the perfect fit!',
-      'image' => 'https://via.placeholder.com/80x80/512da8/ffffff?text=J',
-    ],
-    [
-      'name' => 'Simran Kaur',
-      'job_title' => 'Business Analyst',
-      'company' => 'FinEdge',
-      'story' => 'The salary guide gave me the confidence to negotiate a better offer. Thank you, Skillia!',
-      'image' => 'https://via.placeholder.com/80x80/512da8/ffffff?text=S',
-    ],
-    [
-      'name' => 'Vikram Singh',
-      'job_title' => 'IT Support',
-      'company' => 'NetServe',
-      'story' => 'Skillia\'s job alerts and resources helped me switch careers from sales to IT. Highly recommended!',
-      'image' => 'https://via.placeholder.com/80x80/512da8/ffffff?text=V',
-    ],
+  require_once '../includes/db.php';
+  $successStories = [];
+  $stmt = $pdo->prepare('SELECT name, job_title, company, story, image_url FROM success_stories WHERE status IS NULL OR status = ? ORDER BY submitted_at DESC');
+  $stmt->execute(['approved']);
+  while ($row = $stmt->fetch()) {
+    $successStories[] = [
+      'name' => $row['name'],
+      'job_title' => $row['job_title'],
+      'company' => $row['company'],
+      'story' => $row['story'],
+      'image' => $row['image_url'] ? $row['image_url'] : 'https://via.placeholder.com/80x80/512da8/ffffff?text=' . urlencode(substr($row['name'],0,1)),
   ];
+  }
   ?>
   <section id="success-stories" style="padding: 4rem 0; background: var(--bg-light);">
     <div class="section-header" style="text-align: center; margin-bottom: 3rem;">
@@ -170,8 +138,8 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
       <p class="section-subtitle" style="font-size: 1.1rem; color: var(--text-medium); max-width: 600px; margin: 0 auto;">Real people, real career transformations</p>
     </div>
     <div class="slider-controls" style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-      <button class="slider-btn slider-btn-left" aria-label="Previous Story" style="background: var(--primary); color: var(--white); border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.85;"><i class="ri-arrow-left-s-line"></i></button>
-      <div class="stories-slider" style="max-width: 800px; margin: 0 auto; position: relative; height: 300px; overflow: visible; flex: 1;">
+      <div class="stories-slider" style="max-width: 800px; margin: 0 auto; position: relative; height: 300px; overflow: visible; flex: 1; display: flex; align-items: center;">
+        <button class="slider-btn slider-btn-left" aria-label="Previous Story" style="background: var(--primary); color: var(--white); border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.85; position: absolute; left: -60px; top: 50%; transform: translateY(-50%); z-index: 2;"><i class="ri-arrow-left-s-line"></i></button>
         <?php foreach ($successStories as $i => $story): ?>
         <div class="story-card<?php if($i === 0) echo ' active'; ?>">
           <div class="story-image"><img src="<?= htmlspecialchars($story['image']) ?>" alt="Success Story" /></div>
@@ -181,8 +149,8 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
           </div>
         </div>
         <?php endforeach; ?>
+        <button class="slider-btn slider-btn-right" aria-label="Next Story" style="background: var(--primary); color: var(--white); border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.85; position: absolute; right: -60px; top: 50%; transform: translateY(-50%); z-index: 2;"><i class="ri-arrow-right-s-line"></i></button>
       </div>
-      <button class="slider-btn slider-btn-right" aria-label="Next Story" style="background: var(--primary); color: var(--white); border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.85;"><i class="ri-arrow-right-s-line"></i></button>
     </div>
     <div class="slider-dots" style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
       <?php foreach ($successStories as $i => $story): ?>

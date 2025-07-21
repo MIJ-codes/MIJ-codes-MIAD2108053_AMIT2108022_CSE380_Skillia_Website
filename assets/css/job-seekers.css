@@ -367,6 +367,13 @@
     overflow: visible; /* allow buttons outside */
 }
 
+.stories-slider .story-card {
+  display: none;
+}
+.stories-slider .story-card.active {
+  display: flex;
+}
+
 .story-card {
     position: absolute;
     top: 0;

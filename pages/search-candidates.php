@@ -1,5 +1,83 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
+require_once '../includes/db.php';
+
+// Handle search filters
+$filters = [
+    'jobTitle' => trim($_GET['jobTitle'] ?? ''),
+    'location' => trim($_GET['location'] ?? ''),
+    'experience' => trim($_GET['experience'] ?? ''),
+    'skills' => trim($_GET['skills'] ?? ''),
+    'availability' => trim($_GET['availability'] ?? ''),
+    'salary' => trim($_GET['salary'] ?? ''),
+];
+$page = max(1, (int)($_GET['page'] ?? 1));
+$perPage = 12;
+$where = [];
+$params = [];
+
+// Build SQL WHERE clauses
+if ($filters['jobTitle']) {
+    $where[] = '(job_seekers.title LIKE ? OR job_seekers.bio LIKE ?)';
+    $params[] = '%' . $filters['jobTitle'] . '%';
+    $params[] = '%' . $filters['jobTitle'] . '%';
+}
+if ($filters['location']) {
+    $where[] = 'job_seekers.location = ?';
+    $params[] = $filters['location'];
+}
+if ($filters['experience']) {
+    if ($filters['experience'] === 'entry') {
+        $where[] = 'job_seekers.experience_years <= 2';
+    } elseif ($filters['experience'] === 'mid') {
+        $where[] = 'job_seekers.experience_years BETWEEN 3 AND 5';
+    } elseif ($filters['experience'] === 'senior') {
+        $where[] = 'job_seekers.experience_years > 5';
+    }
+}
+if ($filters['skills']) {
+    $skills = array_map('trim', explode(',', $filters['skills']));
+    foreach ($skills as $skill) {
+        $where[] = 'job_seekers.skills LIKE ?';
+        $params[] = '%' . $skill . '%';
+    }
+}
+if ($filters['availability']) {
+    $where[] = 'job_seekers.availability = ?';
+    $params[] = $filters['availability'];
+}
+if ($filters['salary']) {
+    if ($filters['salary'] === '20k-40k') {
+        $where[] = "job_seekers.expected_salary BETWEEN 20000 AND 40000";
+    } elseif ($filters['salary'] === '40k-60k') {
+        $where[] = "job_seekers.expected_salary BETWEEN 40001 AND 60000";
+    } elseif ($filters['salary'] === '60k-80k') {
+        $where[] = "job_seekers.expected_salary BETWEEN 60001 AND 80000";
+    } elseif ($filters['salary'] === '80k+') {
+        $where[] = "job_seekers.expected_salary > 80000";
+    }
+}
+
+// Count total candidates
+$sqlCount = 'SELECT COUNT(*) FROM job_seekers JOIN users ON job_seekers.user_id = users.id';
+if ($where) {
+    $sqlCount .= ' WHERE ' . implode(' AND ', $where);
+}
+$stmt = $pdo->prepare($sqlCount);
+$stmt->execute($params);
+$totalCandidates = (int)$stmt->fetchColumn();
+
+// Fetch candidates
+$sql = 'SELECT job_seekers.*, users.name, users.email FROM job_seekers JOIN users ON job_seekers.user_id = users.id';
+if ($where) {
+    $sql .= ' WHERE ' . implode(' AND ', $where);
+}
+$offset = ($page-1)*$perPage;
+$sql .= " ORDER BY job_seekers.updated_at DESC LIMIT $offset, $perPage";
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$candidates = $stmt->fetchAll();
+$totalPages = max(1, ceil($totalCandidates / $perPage));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,64 +121,64 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
     <!-- Search Filters Section -->
     <section class="search-filters-section">
         <div class="container">
-            <div class="filters-card">
+            <form class="filters-card" method="get" action="">
                 <h3><i class="ri-filter-3-line"></i> Search Filters</h3>
                 <div class="filters-grid">
                     <div class="filter-group">
                         <label for="jobTitle">Job Title/Keywords</label>
-                        <input type="text" id="jobTitle" placeholder="e.g. Frontend Developer, React, UI/UX">
+                        <input type="text" id="jobTitle" name="jobTitle" value="<?= htmlspecialchars($filters['jobTitle']) ?>" placeholder="e.g. Frontend Developer, React, UI/UX">
                     </div>
                     <div class="filter-group">
                         <label for="location">Location</label>
-                        <select id="location">
+                        <select id="location" name="location">
                             <option value="">Any Location</option>
-                            <option value="dhaka">Dhaka</option>
-                            <option value="chittagong">Chittagong</option>
-                            <option value="sylhet">Sylhet</option>
-                            <option value="remote">Remote</option>
+                            <option value="dhaka" <?= $filters['location']==='dhaka'?'selected':'' ?>>Dhaka</option>
+                            <option value="chittagong" <?= $filters['location']==='chittagong'?'selected':'' ?>>Chittagong</option>
+                            <option value="sylhet" <?= $filters['location']==='sylhet'?'selected':'' ?>>Sylhet</option>
+                            <option value="remote" <?= $filters['location']==='remote'?'selected':'' ?>>Remote</option>
                         </select>
                     </div>
                     <div class="filter-group">
                         <label for="experience">Experience Level</label>
-                        <select id="experience">
+                        <select id="experience" name="experience">
                             <option value="">Any Experience</option>
-                            <option value="entry">Entry Level (0-2 years)</option>
-                            <option value="mid">Mid Level (3-5 years)</option>
-                            <option value="senior">Senior Level (5+ years)</option>
+                            <option value="entry" <?= $filters['experience']==='entry'?'selected':'' ?>>Entry Level (0-2 years)</option>
+                            <option value="mid" <?= $filters['experience']==='mid'?'selected':'' ?>>Mid Level (3-5 years)</option>
+                            <option value="senior" <?= $filters['experience']==='senior'?'selected':'' ?>>Senior Level (5+ years)</option>
                         </select>
                     </div>
                     <div class="filter-group">
                         <label for="skills">Skills</label>
-                        <input type="text" id="skills" placeholder="e.g. JavaScript, Python, React">
+                        <input type="text" id="skills" name="skills" value="<?= htmlspecialchars($filters['skills']) ?>" placeholder="e.g. JavaScript, Python, React">
                     </div>
                     <div class="filter-group">
                         <label for="availability">Availability</label>
-                        <select id="availability">
+                        <select id="availability" name="availability">
                             <option value="">Any Availability</option>
-                            <option value="immediate">Immediate</option>
-                            <option value="2weeks">2 Weeks Notice</option>
-                            <option value="1month">1 Month Notice</option>
+                            <option value="immediate" <?= $filters['availability']==='immediate'?'selected':'' ?>>Immediate</option>
+                            <option value="2weeks" <?= $filters['availability']==='2weeks'?'selected':'' ?>>2 Weeks Notice</option>
+                            <option value="1month" <?= $filters['availability']==='1month'?'selected':'' ?>>1 Month Notice</option>
                         </select>
                     </div>
                     <div class="filter-group">
                         <label for="salary">Expected Salary</label>
-                        <select id="salary">
+                        <select id="salary" name="salary">
                             <option value="">Any Salary</option>
-                            <option value="20k-40k">20K - 40K BDT</option>
-                            <option value="40k-60k">40K - 60K BDT</option>
-                            <option value="60k-80k">60K - 80K BDT</option>
-                            <option value="80k+">80K+ BDT</option>
+                            <option value="20k-40k" <?= $filters['salary']==='20k-40k'?'selected':'' ?>>20K - 40K BDT</option>
+                            <option value="40k-60k" <?= $filters['salary']==='40k-60k'?'selected':'' ?>>40K - 60K BDT</option>
+                            <option value="60k-80k" <?= $filters['salary']==='60k-80k'?'selected':'' ?>>60K - 80K BDT</option>
+                            <option value="80k+" <?= $filters['salary']==='80k+'?'selected':'' ?>>80K+ BDT</option>
                         </select>
                     </div>
                 </div>
                 <div class="filter-actions">
-                    <button class="search-btn" disabled>
+                    <button class="search-btn" type="submit">
                         <i class="ri-search-line"></i>
-                        Search Candidates (Coming Soon)
+                        Search Candidates
                     </button>
-                    <button class="clear-btn" disabled>Clear Filters</button>
+                    <a href="search-candidates.php" class="clear-btn">Clear Filters</a>
                 </div>
-            </div>
+            </form>
         </div>
     </section>
 
@@ -110,7 +188,7 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
             <div class="results-header">
                 <h2>Top Candidates</h2>
                 <div class="results-count">
-                    <span>Showing <strong>12</strong> of <strong>2,847</strong> candidates</span>
+                    <span>Showing <strong><?= count($candidates) ?></strong> of <strong><?= $totalCandidates ?></strong> candidates</span>
                 </div>
                 <div class="sort-options">
                     <label for="sortBy">Sort by:</label>
@@ -124,216 +202,54 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
             </div>
 
             <div class="candidates-grid">
-                <!-- Candidate Card 1 -->
+                <?php foreach ($candidates as $cand): ?>
                 <div class="candidate-card">
                     <div class="candidate-header">
                         <div class="candidate-avatar">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" alt="Ahmed Rahman">
+                            <?php if (!empty($cand['photo'])): ?>
+                                <img src="<?= htmlspecialchars($cand['photo']) ?>" alt="<?= htmlspecialchars($cand['name']) ?>">
+                            <?php else: ?>
+                                <img src="https://ui-avatars.com/api/?name=<?= urlencode($cand['name']) ?>&background=ded6f7&color=512da8" alt="<?= htmlspecialchars($cand['name']) ?>">
+                            <?php endif; ?>
                         </div>
                         <div class="candidate-info">
-                            <h3>Ahmed Rahman</h3>
-                            <p class="candidate-title">Senior Frontend Developer</p>
-                            <p class="candidate-location"><i class="ri-map-pin-line"></i> Dhaka, Bangladesh</p>
-                        </div>
-                        <div class="candidate-status">
-                            <span class="status-badge available">Available</span>
+                            <h3><?= htmlspecialchars($cand['name']) ?></h3>
+                            <p class="candidate-title"><?= isset($cand['title']) ? htmlspecialchars($cand['title']) : 'N/A' ?></p>
+                            <p class="candidate-location"><i class="ri-map-pin-line"></i> <?= isset($cand['location']) ? htmlspecialchars($cand['location']) : 'N/A' ?></p>
                         </div>
                     </div>
                     <div class="candidate-skills">
-                        <span class="skill-tag">React</span>
-                        <span class="skill-tag">JavaScript</span>
-                        <span class="skill-tag">TypeScript</span>
-                        <span class="skill-tag">Node.js</span>
-                        <span class="skill-tag">UI/UX</span>
+                        <?php if (!empty($cand['skills'])): ?>
+                            <?php foreach (explode(',', $cand['skills']) as $skill): ?>
+                                <span class="skill-tag"><?= htmlspecialchars(trim($skill)) ?></span>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <span class="skill-tag">N/A</span>
+                        <?php endif; ?>
                     </div>
                     <div class="candidate-details">
-                        <p class="experience"><i class="ri-time-line"></i> 5+ years experience</p>
-                        <p class="salary"><i class="ri-money-dollar-circle-line"></i> 60K - 80K BDT</p>
-                        <p class="availability"><i class="ri-calendar-line"></i> Available in 2 weeks</p>
+                        <?php if (isset($cand['bio'])): ?><p class="bio"><i class="ri-user-3-line"></i> <?= htmlspecialchars($cand['bio']) ?></p><?php endif; ?>
                     </div>
                     <div class="candidate-actions">
-                        <button class="view-profile-btn" disabled>View Profile</button>
-                        <button class="contact-btn" disabled><i class="ri-message-3-line"></i> Contact</button>
+                        <a href="candidate-profile.php?id=<?= $cand['id'] ?>" class="view-profile-btn">View Profile</a>
+                        <a class="contact-btn" href="mailto:<?= htmlspecialchars($cand['email']) ?>"><i class="ri-message-3-line"></i> Contact</a>
                     </div>
                 </div>
-
-                <!-- Candidate Card 2 -->
-                <div class="candidate-card">
-                    <div class="candidate-header">
-                        <div class="candidate-avatar">
-                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face" alt="Fatima Khan">
-                        </div>
-                        <div class="candidate-info">
-                            <h3>Fatima Khan</h3>
-                            <p class="candidate-title">Full Stack Developer</p>
-                            <p class="candidate-location"><i class="ri-map-pin-line"></i> Chittagong, Bangladesh</p>
-                        </div>
-                        <div class="candidate-status">
-                            <span class="status-badge immediate">Immediate</span>
-                        </div>
-                    </div>
-                    <div class="candidate-skills">
-                        <span class="skill-tag">Python</span>
-                        <span class="skill-tag">Django</span>
-                        <span class="skill-tag">React</span>
-                        <span class="skill-tag">PostgreSQL</span>
-                        <span class="skill-tag">AWS</span>
-                    </div>
-                    <div class="candidate-details">
-                        <p class="experience"><i class="ri-time-line"></i> 3 years experience</p>
-                        <p class="salary"><i class="ri-money-dollar-circle-line"></i> 40K - 60K BDT</p>
-                        <p class="availability"><i class="ri-calendar-line"></i> Available immediately</p>
-                    </div>
-                    <div class="candidate-actions">
-                        <button class="view-profile-btn" disabled>View Profile</button>
-                        <button class="contact-btn" disabled><i class="ri-message-3-line"></i> Contact</button>
-                    </div>
-                </div>
-
-                <!-- Candidate Card 3 -->
-                <div class="candidate-card">
-                    <div class="candidate-header">
-                        <div class="candidate-avatar">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="Rahim Ali">
-                        </div>
-                        <div class="candidate-info">
-                            <h3>Rahim Ali</h3>
-                            <p class="candidate-title">DevOps Engineer</p>
-                            <p class="candidate-location"><i class="ri-map-pin-line"></i> Remote</p>
-                        </div>
-                        <div class="candidate-status">
-                            <span class="status-badge available">Available</span>
-                        </div>
-                    </div>
-                    <div class="candidate-skills">
-                        <span class="skill-tag">Docker</span>
-                        <span class="skill-tag">Kubernetes</span>
-                        <span class="skill-tag">AWS</span>
-                        <span class="skill-tag">Jenkins</span>
-                        <span class="skill-tag">Linux</span>
-                    </div>
-                    <div class="candidate-details">
-                        <p class="experience"><i class="ri-time-line"></i> 4 years experience</p>
-                        <p class="salary"><i class="ri-money-dollar-circle-line"></i> 70K - 90K BDT</p>
-                        <p class="availability"><i class="ri-calendar-line"></i> Available in 1 month</p>
-                    </div>
-                    <div class="candidate-actions">
-                        <button class="view-profile-btn" disabled>View Profile</button>
-                        <button class="contact-btn" disabled><i class="ri-message-3-line"></i> Contact</button>
-                    </div>
-                </div>
-
-                <!-- Candidate Card 4 -->
-                <div class="candidate-card">
-                    <div class="candidate-header">
-                        <div class="candidate-avatar">
-                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" alt="Aisha Begum">
-                        </div>
-                        <div class="candidate-info">
-                            <h3>Aisha Begum</h3>
-                            <p class="candidate-title">UI/UX Designer</p>
-                            <p class="candidate-location"><i class="ri-map-pin-line"></i> Sylhet, Bangladesh</p>
-                        </div>
-                        <div class="candidate-status">
-                            <span class="status-badge immediate">Immediate</span>
-                        </div>
-                    </div>
-                    <div class="candidate-skills">
-                        <span class="skill-tag">Figma</span>
-                        <span class="skill-tag">Adobe XD</span>
-                        <span class="skill-tag">Sketch</span>
-                        <span class="skill-tag">Prototyping</span>
-                        <span class="skill-tag">User Research</span>
-                    </div>
-                    <div class="candidate-details">
-                        <p class="experience"><i class="ri-time-line"></i> 2 years experience</p>
-                        <p class="salary"><i class="ri-money-dollar-circle-line"></i> 30K - 50K BDT</p>
-                        <p class="availability"><i class="ri-calendar-line"></i> Available immediately</p>
-                    </div>
-                    <div class="candidate-actions">
-                        <button class="view-profile-btn" disabled>View Profile</button>
-                        <button class="contact-btn" disabled><i class="ri-message-3-line"></i> Contact</button>
-                    </div>
-                </div>
-
-                <!-- Candidate Card 5 -->
-                <div class="candidate-card">
-                    <div class="candidate-header">
-                        <div class="candidate-avatar">
-                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face" alt="Karim Hassan">
-                        </div>
-                        <div class="candidate-info">
-                            <h3>Karim Hassan</h3>
-                            <p class="candidate-title">Backend Developer</p>
-                            <p class="candidate-location"><i class="ri-map-pin-line"></i> Dhaka, Bangladesh</p>
-                        </div>
-                        <div class="candidate-status">
-                            <span class="status-badge available">Available</span>
-                        </div>
-                    </div>
-                    <div class="candidate-skills">
-                        <span class="skill-tag">Java</span>
-                        <span class="skill-tag">Spring Boot</span>
-                        <span class="skill-tag">MySQL</span>
-                        <span class="skill-tag">Microservices</span>
-                        <span class="skill-tag">REST API</span>
-                    </div>
-                    <div class="candidate-details">
-                        <p class="experience"><i class="ri-time-line"></i> 6 years experience</p>
-                        <p class="salary"><i class="ri-money-dollar-circle-line"></i> 80K - 100K BDT</p>
-                        <p class="availability"><i class="ri-calendar-line"></i> Available in 2 weeks</p>
-                    </div>
-                    <div class="candidate-actions">
-                        <button class="view-profile-btn" disabled>View Profile</button>
-                        <button class="contact-btn" disabled><i class="ri-message-3-line"></i> Contact</button>
-                    </div>
-                </div>
-
-                <!-- Candidate Card 6 -->
-                <div class="candidate-card">
-                    <div class="candidate-header">
-                        <div class="candidate-avatar">
-                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face" alt="Nadia Islam">
-                        </div>
-                        <div class="candidate-info">
-                            <h3>Nadia Islam</h3>
-                            <p class="candidate-title">Data Scientist</p>
-                            <p class="candidate-location"><i class="ri-map-pin-line"></i> Remote</p>
-                        </div>
-                        <div class="candidate-status">
-                            <span class="status-badge immediate">Immediate</span>
-                        </div>
-                    </div>
-                    <div class="candidate-skills">
-                        <span class="skill-tag">Python</span>
-                        <span class="skill-tag">Machine Learning</span>
-                        <span class="skill-tag">TensorFlow</span>
-                        <span class="skill-tag">SQL</span>
-                        <span class="skill-tag">Statistics</span>
-                    </div>
-                    <div class="candidate-details">
-                        <p class="experience"><i class="ri-time-line"></i> 3 years experience</p>
-                        <p class="salary"><i class="ri-money-dollar-circle-line"></i> 60K - 80K BDT</p>
-                        <p class="availability"><i class="ri-calendar-line"></i> Available immediately</p>
-                    </div>
-                    <div class="candidate-actions">
-                        <button class="view-profile-btn" disabled>View Profile</button>
-                        <button class="contact-btn" disabled><i class="ri-message-3-line"></i> Contact</button>
-                    </div>
-                </div>
+                <?php endforeach; ?>
+                <?php if (empty($candidates)): ?>
+                    <div style="padding:2rem;color:#888;">No candidates found matching your criteria.</div>
+                <?php endif; ?>
             </div>
 
             <!-- Pagination -->
             <div class="pagination">
-                <button class="pagination-btn" disabled><i class="ri-arrow-left-s-line"></i> Previous</button>
+                <a class="pagination-btn" href="?<?= http_build_query(array_merge($_GET, ['page' => max(1, $page-1)])) ?>" <?= $page <= 1 ? 'style="pointer-events:none;opacity:0.5;"' : '' ?>><i class="ri-arrow-left-s-line"></i> Previous</a>
                 <div class="page-numbers">
-                    <span class="page-number active">1</span>
-                    <span class="page-number">2</span>
-                    <span class="page-number">3</span>
-                    <span class="page-number">...</span>
-                    <span class="page-number">12</span>
+                    <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+                        <a class="page-number<?= $p == $page ? ' active' : '' ?>" href="?<?= http_build_query(array_merge($_GET, ['page' => $p])) ?>"> <?= $p ?> </a>
+                    <?php endfor; ?>
                 </div>
-                <button class="pagination-btn" disabled>Next <i class="ri-arrow-right-s-line"></i></button>
+                <a class="pagination-btn" href="?<?= http_build_query(array_merge($_GET, ['page' => min($totalPages, $page+1)])) ?>" <?= $page >= $totalPages ? 'style="pointer-events:none;opacity:0.5;"' : '' ?>>Next <i class="ri-arrow-right-s-line"></i></a>
             </div>
         </div>
     </section>

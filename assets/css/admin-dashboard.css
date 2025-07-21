@@ -216,3 +216,62 @@ body {
     gap: 8px;
   }
 } 
+
+.admin-edit-row input,
+.admin-edit-row textarea {
+  max-width: 140px;
+  min-width: 60px;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 1rem;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1.5px solid #ff4f8b;
+  background: #fff0f6;
+  resize: vertical;
+}
+
+.admin-edit-row textarea {
+  min-height: 40px;
+  max-height: 120px;
+  overflow-y: auto;
+} 
+
+.fullwidth-dashboard {
+  max-width: none !important;
+  width: 100vw !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  background: #fff !important;
+}
+.fullwidth-dashboard .admin-table {
+  width: 100% !important;
+}
+
+@media (max-width: 900px) {
+  .fullwidth-dashboard {
+    padding-left: 0;
+    padding-right: 0;
+  }
+} 
+
+.admin-edit-row form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.admin-edit-row form > div {
+  min-width: 220px;
+  flex: 1 1 220px;
+  margin-bottom: 12px;
+}
+
+.admin-edit-row textarea {
+  min-width: 320px;
+  flex: 2 1 320px;
+} 

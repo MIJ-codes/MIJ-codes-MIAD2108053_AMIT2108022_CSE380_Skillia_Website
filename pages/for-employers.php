@@ -39,28 +39,51 @@ if (session_status() === PHP_SESSION_NONE) { session_start(); }
                     <div class="employers-card-desc">Browse and filter through a large pool of qualified job seekers.</div>
                 </a>
             </div>
-            <div class="employers-card-wrapper">
-                <a href="recruitment-solutions.php" class="employers-card">
-                    <div class="employers-card-icon"><i class="ri-user-star-line"></i></div>
-                    <div class="employers-card-title">Recruitment Solutions</div>
-                    <div class="employers-card-desc">Get expert help and AI-powered tools for smarter hiring decisions.</div>
-                </a>
-            </div>
-            <div class="employers-card-wrapper">
-                <a href="pricing-plans.php" class="employers-card">
-                    <div class="employers-card-icon"><i class="ri-money-dollar-circle-line"></i></div>
-                    <div class="employers-card-title">Pricing Plans</div>
-                    <div class="employers-card-desc">Choose the best plan for your hiring needs and budget.</div>
-                </a>
-            </div>
-            <div class="employers-card-wrapper">
-                <a href="enterprise-solutions.php" class="employers-card">
-                    <div class="employers-card-icon"><i class="ri-building-4-line"></i></div>
-                    <div class="employers-card-title">Enterprise Solutions</div>
-                    <div class="employers-card-desc">Custom solutions for large organizations and bulk hiring.</div>
-                </a>
-            </div>
         </div>
+        <!-- Why Choose Skillia Section -->
+        <section class="employers-why-skillia">
+            <h3>Why Choose Skillia?</h3>
+            <div class="why-skillia-grid">
+                <div class="why-skillia-item"><i class="ri-user-search-line"></i><span>Access a large, diverse talent pool</span></div>
+                <div class="why-skillia-item"><i class="ri-flashlight-line"></i><span>Fast, targeted candidate matching</span></div>
+                <div class="why-skillia-item"><i class="ri-dashboard-line"></i><span>Modern, easy-to-use dashboard</span></div>
+                <div class="why-skillia-item"><i class="ri-shield-check-line"></i><span>Secure & confidential hiring</span></div>
+                <div class="why-skillia-item"><i class="ri-customer-service-2-line"></i><span>Dedicated employer support</span></div>
+            </div>
+        </section>
+        <!-- How It Works Section -->
+        <section class="employers-how-it-works">
+            <h3>How It Works</h3>
+            <div class="how-it-works-steps">
+                <div class="how-step"><span class="step-num">1</span><span>Post your job</span></div>
+                <div class="how-step"><span class="step-num">2</span><span>Search & filter candidates</span></div>
+                <div class="how-step"><span class="step-num">3</span><span>Shortlist & contact</span></div>
+                <div class="how-step"><span class="step-num">4</span><span>Hire the best talent</span></div>
+            </div>
+        </section>
+        <!-- Employer Testimonials Section -->
+        <section class="employers-testimonials">
+            <h3>What Employers Say</h3>
+            <div class="testimonials-grid">
+                <div class="testimonial-item">
+                    <p>“Skillia helped us fill our open positions 2x faster than before. The candidate quality is excellent!”</p>
+                    <span>- HR Manager, TechCorp</span>
+                </div>
+                <div class="testimonial-item">
+                    <p>“The dashboard is intuitive and the support team is always responsive. Highly recommended!”</p>
+                    <span>- Talent Lead, FinEdge</span>
+                </div>
+                <div class="testimonial-item">
+                    <p>“We found specialized talent for a hard-to-fill role in days, not weeks. Great experience!”</p>
+                    <span>- CEO, HealthPlus</span>
+                </div>
+            </div>
+        </section>
+        <!-- Call to Action -->
+        <section class="employers-cta">
+            <a href="post-job.php" class="employers-cta-btn">Post a Job Now</a>
+            <a href="contact-us.php" class="employers-cta-link">Contact Employer Support</a>
+        </section>
     </section>
 </div>
 <script src="../assets/js/main.js"></script>

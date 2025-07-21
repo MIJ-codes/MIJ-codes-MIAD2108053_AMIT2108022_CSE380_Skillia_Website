@@ -99,9 +99,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['story_name'])) {
       $story_photo_url = $target_file;
     }
   }
-  if ($story_name && $story_job_title && $story_company && $story_text) {
-    $stmt = $pdo->prepare('INSERT INTO success_stories (name, job_title, company, story, image_url) VALUES (?, ?, ?, ?, ?)');
-    $stmt->execute([$story_name, $story_job_title, $story_company, $story_text, $story_photo_url]);
+  if ($story_name && $story_job_title && $story_company && $story_text && $seeker_id) {
+    $stmt = $pdo->prepare('INSERT INTO success_stories (seeker_id, name, job_title, company, story, image_url, status, submitted_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())');
+    $stmt->execute([$seeker_id, $story_name, $story_job_title, $story_company, $story_text, $story_photo_url, 'approved']);
     $message_story = 'Thank you for sharing your success story!';
   } else {
     $message_story = 'Please fill in all required fields.';
